@@ -819,7 +819,9 @@ start_rules() {
 	local server=$(get_host_ip $GLOBAL_SERVER)
 	local local_port=$(uci_get_by_name $GLOBAL_SERVER local_port)
 	#local lan_ac_ips=$(uci_get_by_type access_control lan_ac_ips)
-        lan_ac_ips=$(seq 40 254 | awk '{printf "192.168.111.%s ", $1}')
+        #lan_ac_ips=$(seq 40 254 | awk '{printf "192.168.111.%s ", $1}')
+        lan_ac_ips=$(seq 40 254 | awk '$1!=113{printf "192.168.111.%s ", $1}')
+
 	local lan_ac_mode=$(uci_get_by_type access_control lan_ac_mode)
 	if [ "$kcp_enable_flag" == "0" -a "$redir_udp" == "1" ]; then
 		local udp_server=$(get_host_ip $UDP_RELAY_SERVER)
