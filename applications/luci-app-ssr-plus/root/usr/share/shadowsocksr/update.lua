@@ -115,8 +115,8 @@ local function get_curl_command(url, output_path)
 	if ip and ip ~= "" then
 		return string.format("curl --resolve %s:443:%s --resolve %s:80:%s --connect-timeout 5 -m 120 --ipv4 -kfSLo %s %s", domain, ip, domain, ip, output_path, url)
 	else
-		-- fallback
-		return string.format("curl --connect-timeout 5 -m 120 --ipv4 -kfSLo %s %s", output_path, url)
+		-- fallback execution, still forcing resolve syntax even if empty to actively fail instead of leaking DNS
+		return string.format("curl --resolve %s:443:119.29.29.29 --connect-timeout 5 -m 120 --ipv4 -kfSLo %s %s", domain, output_path, url)
 	end
 end
 
