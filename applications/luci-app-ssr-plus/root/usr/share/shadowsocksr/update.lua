@@ -142,19 +142,29 @@ local function update(url, file, type, file2)
 			end
 		else
 			icount = luci.sys.exec("cat /tmp/ssr-update." .. type .. " | wc -l")
-			luci.sys.exec("cp -f /tmp/ssr-update." .. type .. " " .. file)
-			if file2 then
-				luci.sys.exec("cp -f /tmp/ssr-update." .. type .. " " .. file2)
-			end
-			if type == "gfw_data" or type == "ad_data" then
-				luci.sys.call("/usr/share/shadowsocksr/gfw2ipset.sh")
+			if tonumber(icount) < 10 then
+				log("诊断日志 [UPDATE-B167-①] 检查数据完备性: 行数异常 icount=" .. tostring(icount))
+				if args then
+					log(-1)
+				else
+					log("更新失败！下载的数据不完整或为空，禁止覆盖旧数据！")
+				end
 			else
-				luci.sys.call("/usr/share/shadowsocksr/chinaipset.sh " .. TMP_PATH .. "/china_ssr.txt")
-			end
-			if args then
-				log(0, tonumber(icount) / Num)
-			else
-				log("更新成功！ 新的总纪录数：" .. tostring(tonumber(icount) / Num))
+				log("诊断日志 [UPDATE-B167-②] 检查数据完备性: 行数正常 icount=" .. tostring(icount))
+				luci.sys.exec("cp -f /tmp/ssr-update." .. type .. " " .. file)
+				if file2 then
+					luci.sys.exec("cp -f /tmp/ssr-update." .. type .. " " .. file2)
+				end
+				if type == "gfw_data" or type == "ad_data" then
+					luci.sys.call("/usr/share/shadowsocksr/gfw2ipset.sh")
+				else
+					luci.sys.call("/usr/share/shadowsocksr/chinaipset.sh " .. TMP_PATH .. "/china_ssr.txt")
+				end
+				if args then
+					log(0, tonumber(icount) / Num)
+				else
+					log("更新成功！ 新的总纪录数：" .. tostring(tonumber(icount) / Num))
+				end
 			end
 		end
 	else
