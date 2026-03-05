@@ -151,9 +151,9 @@ local function update(url, file, type, file2)
 				end
 			else
 				log("诊断日志 [UPDATE-B167-②] 检查数据完备性: 行数正常 icount=" .. tostring(icount))
-				luci.sys.exec("cp -f /tmp/ssr-update." .. type .. " " .. file)
+				luci.sys.exec("cp -f /tmp/ssr-update." .. type .. " " .. file .. ".tmp && mv -f " .. file .. ".tmp " .. file)
 				if file2 then
-					luci.sys.exec("cp -f /tmp/ssr-update." .. type .. " " .. file2)
+					luci.sys.exec("cp -f /tmp/ssr-update." .. type .. " " .. file2 .. ".tmp && mv -f " .. file2 .. ".tmp " .. file2)
 				end
 				if type == "gfw_data" or type == "ad_data" then
 					luci.sys.call("/usr/share/shadowsocksr/gfw2ipset.sh")
