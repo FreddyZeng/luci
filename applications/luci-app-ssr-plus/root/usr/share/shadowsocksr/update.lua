@@ -99,9 +99,30 @@ local log = function(...)
 	end
 end
 
+local function get_curl_command(url, output_path)
+	local domain = string.match(url, "://(.-)/") or ""
+	if domain == "" then
+		return "curl --connect-timeout 5 -m 120 --ipv4 -kfSLo " .. output_path .. " " .. url
+	end
+
+	-- Run nslookup 119.29.29.29 and parse with awk strictly preserving IPv4
+	local awk_cmd = string.format("nslookup '%s' 119.29.29.29 2>/dev/null | awk -v dns='119.29.29.29' '/Address/ {for(i=1; i<=NF; i++) {if ($i ~ /^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$/ && $i != dns && $i != \"127.0.0.1\" && $i != \"0.0.0.0\") {ip=$i}}} END {print ip}'", domain)
+	local handle = io.popen(awk_cmd)
+	local ip = handle:read("*a")
+	handle:close()
+	ip = ip:gsub("%s+", "") -- strip newlines/spaces
+	
+	if ip and ip ~= "" then
+		return string.format("curl --resolve %s:443:%s --resolve %s:80:%s --connect-timeout 5 -m 120 --ipv4 -kfSLo %s %s", domain, ip, domain, ip, output_path, url)
+	else
+		-- fallback
+		return string.format("curl --connect-timeout 5 -m 120 --ipv4 -kfSLo %s %s", output_path, url)
+	end
+end
+
 local function update(url, file, type, file2)
 	local Num = 1
-	local refresh_cmd = "wget --no-check-certificate -q -O /tmp/ssr-update." .. type .. " " .. url
+	local refresh_cmd = get_curl_command(url, "/tmp/ssr-update." .. type)
 	local sret = luci.sys.call(refresh_cmd)
 	if sret == 0 then
 		if type == "gfw_data" then
