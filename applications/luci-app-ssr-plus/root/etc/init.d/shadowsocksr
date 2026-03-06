@@ -133,7 +133,7 @@ unlock() {
 	failcount=1
 	while [ "$failcount" -le 10 ]; do
 		if [ -f "$LOCK_FILE" ]; then
-			let "failcount++"
+			failcount=$((failcount + 1))
 			sleep 1s
 			[ "$failcount" -ge 10 ] && unset_lock
 		else
@@ -875,11 +875,33 @@ start_rules() {
 	return $?
 }
 
+wait_for_mosdns() {
+	if [ "$(uci -q get mosdns.mosdns.enabled)" = "1" ]; then
+		echolog "[INIT-B006-③] 发现 MosDNS 已开启，等待其完全启动（加载规则与绑定端口）..."
+		local timeout=60
+		local i=0
+		while [ "$i" -lt "$timeout" ]; do
+			if pgrep -x "mosdns" >/dev/null; then
+				# Use netstat to verify mosdns is actively listening on a port
+				if netstat -unlp 2>/dev/null | grep -q "/mosdns" || netstat -tlnp 2>/dev/null | grep -q "/mosdns"; then
+					echolog "[INIT-B006-④] 检查通过：MosDNS 已完全启动并建立监听"
+					sleep 1 # 额外等待1秒确保路由表稳定
+					return 0
+				fi
+			fi
+			sleep 1
+			i=$((i + 1))
+		done
+		echolog "[INIT-B006-❌] 等待 MosDNS 完全启动超时(60s)，强制继续执行"
+	fi
+}
+
 start() {
     ulimit -Hn 65535
     ulimit -n 65535
 	set_lock
 	echolog "----------start------------"
+	wait_for_mosdns
 	mkdir -p /var/run /var/lock /var/log /tmp/dnsmasq.d $TMP_BIN_PATH $TMP_DNSMASQ_PATH
 	echo "conf-dir=${TMP_DNSMASQ_PATH}" >"/tmp/dnsmasq.d/dnsmasq-ssrplus.conf"
 	if load_config; then
