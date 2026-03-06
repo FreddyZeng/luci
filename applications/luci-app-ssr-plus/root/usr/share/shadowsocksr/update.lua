@@ -112,12 +112,32 @@ local function get_curl_command(url, output_path)
 	handle:close()
 	ip = ip:gsub("%s+", "") -- strip newlines/spaces
 	
+	local resolve_str = ""
 	if ip and ip ~= "" then
-		return string.format("curl --resolve %s:443:%s --resolve %s:80:%s --connect-timeout 5 -m 120 --ipv4 -kfSLo %s %s", domain, ip, domain, ip, output_path, url)
+		resolve_str = string.format("--resolve %s:443:%s --resolve %s:80:%s", domain, ip, domain, ip)
 	else
 		-- fallback execution, still forcing resolve syntax even if empty to actively fail instead of leaking DNS
-		return string.format("curl --resolve %s:443:119.29.29.29 --connect-timeout 5 -m 120 --ipv4 -kfSLo %s %s", domain, output_path, url)
+		resolve_str = string.format("--resolve %s:443:119.29.29.29 --resolve %s:80:119.29.29.29", domain, domain)
 	end
+	
+	-- [B-003-Fix] Resolve GitHub redirect domains to prevent curl timeout
+	if domain == "github.com" or domain == "raw.githubusercontent.com" then
+		local extra_domains = {"release-assets.githubusercontent.com", "objects.githubusercontent.com"}
+		for _, ed in ipairs(extra_domains) do
+			local e_awk_cmd = string.format("nslookup '%s' 119.29.29.29 2>/dev/null | awk -v dns='119.29.29.29' '/Address/ {for(i=1; i<=NF; i++) {if ($i ~ /^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$/ && $i != dns && $i != \"127.0.0.1\" && $i != \"0.0.0.0\") {ip=$i}}} END {print ip}'", ed)
+			local e_handle = io.popen(e_awk_cmd)
+			local e_ip = e_handle:read("*a")
+			e_handle:close()
+			e_ip = e_ip:gsub("%s+", "")
+			if e_ip and e_ip ~= "" then
+				resolve_str = resolve_str .. string.format(" --resolve %s:443:%s --resolve %s:80:%s", ed, e_ip, ed, e_ip)
+			else
+				resolve_str = resolve_str .. string.format(" --resolve %s:443:119.29.29.29 --resolve %s:80:119.29.29.29", ed, ed)
+			end
+		end
+	end
+
+	return string.format("curl %s --connect-timeout 5 -m 120 --ipv4 -kfSLo %s %s", resolve_str, output_path, url)
 end
 
 local function update(url, file, type, file2)
