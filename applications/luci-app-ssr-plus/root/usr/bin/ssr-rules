@@ -232,11 +232,6 @@ tp_rule() {
 	$ipt -A SS_SPEC_TPROXY -p udp ! --dport 53 -d $SERVER -j RETURN
 	[ "$server" != "$SERVER" ] && ipset -! add whitelist $SERVER
 	$ipt -A SS_SPEC_TPROXY -p udp -m set --match-set bplan src -j RETURN
-	# UDP_PROXY_PORTS: restrict UDP relay to proxy-relevant ports when PROXY_PORTS is
-	# empty (dports=1/all mode). Xray creates one goroutine per UDP src:dst:port
-	# tuple; capturing ALL non-China UDP floods Xray and causes goroutine leak crash.
-	# gmlan game-mode devices bypass this limit via the unrestricted gmlan rule below.
-	local UDP_PROXY_PORTS="${PROXY_PORTS:--m multiport --dports 22,53,587,465,995,993,143,80,443,853,9418}"
 	$ipt -A SS_SPEC_TPROXY -p udp $PROXY_PORTS -m set --match-set fplan src -j TPROXY --on-port "$LOCAL_PORT" --tproxy-mark 0x8000/0x8000
 	case "$RUNMODE" in
 	router)
@@ -244,26 +239,23 @@ tp_rule() {
 		$ipt -A SS_SPEC_TPROXY -p udp -m set --match-set china dst -j RETURN
 		$ipt -A SS_SPEC_TPROXY -p udp --dport 80 -j REJECT
 		$ipt -A SS_SPEC_TPROXY -p udp --dport 443 -j REJECT
-		# gmlan: game-mode devices relay all UDP (no port restriction)
 		$ipt -A SS_SPEC_TPROXY -p udp -m set --match-set gmlan src -m set ! --match-set china dst -j TPROXY --on-port "$LOCAL_PORT" --tproxy-mark 0x8000/0x8000
-		# general devices: port-restricted to prevent goroutine flood
-		$ipt -A SS_SPEC_TPROXY -p udp $UDP_PROXY_PORTS -m set ! --match-set ss_spec_wan_ac dst -j TPROXY --on-port "$LOCAL_PORT" --tproxy-mark 0x8000/0x8000
+		$ipt -A SS_SPEC_TPROXY -p udp $PROXY_PORTS -m set ! --match-set ss_spec_wan_ac dst -j TPROXY --on-port "$LOCAL_PORT" --tproxy-mark 0x8000/0x8000
 		;;
 	gfw)
 		$ipt -A SS_SPEC_TPROXY -p udp -m set --match-set china dst -j RETURN
 		$ipt -A SS_SPEC_TPROXY -p udp --dport 80 -j REJECT
 		$ipt -A SS_SPEC_TPROXY -p udp --dport 443 -j REJECT
-		$ipt -A SS_SPEC_TPROXY -p udp $UDP_PROXY_PORTS -m set --match-set gfwlist dst -j TPROXY --on-port "$LOCAL_PORT" --tproxy-mark 0x8000/0x8000
-		# gmlan: game-mode devices relay all UDP
+		$ipt -A SS_SPEC_TPROXY -p udp $PROXY_PORTS -m set --match-set gfwlist dst -j TPROXY --on-port "$LOCAL_PORT" --tproxy-mark 0x8000/0x8000
 		$ipt -A SS_SPEC_TPROXY -p udp -m set --match-set gmlan src -m set ! --match-set china dst -j TPROXY --on-port "$LOCAL_PORT" --tproxy-mark 0x8000/0x8000
 		;;
 	oversea)
-		$ipt -A SS_SPEC_TPROXY -p udp $UDP_PROXY_PORTS -m set --match-set oversea src -m dst -j TPROXY --on-port "$LOCAL_PORT" --tproxy-mark 0x8000/0x8000
+		$ipt -A SS_SPEC_TPROXY -p udp $PROXY_PORTS -m set --match-set oversea src -m dst -j TPROXY --on-port "$LOCAL_PORT" --tproxy-mark 0x8000/0x8000
 		$ipt -A SS_SPEC_TPROXY -p udp -m set --match-set gmlan src -m set -j TPROXY --on-port "$LOCAL_PORT" --tproxy-mark 0x8000/0x8000
-		$ipt -A SS_SPEC_TPROXY -p udp $UDP_PROXY_PORTS -m set --match-set china dst -j TPROXY --on-port "$LOCAL_PORT" --tproxy-mark 0x8000/0x8000
+		$ipt -A SS_SPEC_TPROXY -p udp $PROXY_PORTS -m set --match-set china dst -j TPROXY --on-port "$LOCAL_PORT" --tproxy-mark 0x8000/0x8000
 		;;
 	all)
-		$ipt -A SS_SPEC_TPROXY -p udp $UDP_PROXY_PORTS -j TPROXY --on-port "$LOCAL_PORT" --tproxy-mark 0x8000/0x8000
+		$ipt -A SS_SPEC_TPROXY -p udp $PROXY_PORTS -j TPROXY --on-port "$LOCAL_PORT" --tproxy-mark 0x8000/0x8000
 		;;
 	esac
 	if [ -z "$Interface" ]; then
