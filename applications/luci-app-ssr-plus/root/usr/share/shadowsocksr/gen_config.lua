@@ -213,6 +213,14 @@ local Xray = {
 				health_check_timeout = tonumber(server.health_check_timeout) or nil,
 				permit_without_stream = (server.permit_without_stream == "1") and true or nil,
 				initial_windows_size = tonumber(server.initial_windows_size) or nil
+			} or nil,
+			-- [SSR-KEEPALIVE] 防止 CGNAT/防火墙因空闲超时断开长连接
+			-- tcpKeepAliveIdle: 连接空闲多少秒后开始发心跳（60秒）
+			-- tcpKeepAliveInterval: 心跳探测间隔（30秒）
+			-- 确保 CGNAT NAT 映射不被运营商静默删除
+			sockopt = (server.transport ~= "quic" and server.transport ~= "wireguard") and {
+				tcpKeepAliveIdle = 60,
+				tcpKeepAliveInterval = 30
 			} or nil
 		},
 		mux = (server.mux == "1" and server.transport ~= "grpc") and {
