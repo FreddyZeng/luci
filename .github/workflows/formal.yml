@@ -1,17 +1,20 @@
 name: Test Formalities
 
 on:
-  pull_request:
+  pull_request_target:
+
+permissions:
+  contents: read
 
 jobs:
-  build:
+  formalities:
     name: Test Formalities
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     strategy:
       fail-fast: false
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0

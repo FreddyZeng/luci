@@ -1,17 +1,17 @@
 // Copyright 2022 Jo-Philipp Wich <jo@mein.io>
 // Licensed to the public under the Apache License 2.0.
 
-import { open, stat, glob, lsdir, unlink, basename } from 'fs';
+import { open, readfile, stat, glob, lsdir, unlink, basename } from 'fs';
 import { striptags, entityencode } from 'html';
 import { connect } from 'ubus';
 import { cursor } from 'uci';
-import { rand } from 'math';
 import { openlog, syslog, closelog, LOG_INFO, LOG_WARNING, LOG_AUTHPRIV } from 'log';
 
 import { hash, load_catalog, change_catalog, translate, ntranslate, getuid } from 'luci.core';
 import { revision as luciversion, branch as luciname } from 'luci.version';
 import { default as LuCIRuntime } from 'luci.runtime';
-import { urldecode } from 'luci.http';
+import { urldecode, urlencode } from 'luci.http';
+import { get_challenges, verify } from 'luci.authplugins';
 
 let ubus = connect();
 let uci = cursor();
@@ -350,6 +350,7 @@ function build_pagetree() {
 		action: 'object',
 		auth: 'object',
 		cors: 'bool',
+		css: 'string',
 		depends: 'object',
 		order: 'int',
 		setgroup: 'string',
@@ -388,10 +389,12 @@ function build_pagetree() {
 			for (let path, spec in data) {
 				if (type(spec) == 'object') {
 					let node = tree;
+					let has_wildcard = false;
 
 					for (let s in match(path, /[^\/]+/g)) {
 						if (s[0] == '*') {
 							node.wildcard = true;
+							has_wildcard = true;
 							break;
 						}
 
@@ -404,6 +407,12 @@ function build_pagetree() {
 						for (let k, t in schema)
 							if (type(spec[k]) == t)
 								node[k] = spec[k];
+
+						/* Preserve distinct actions for wildcard vs. base path */
+						if (has_wildcard && type(spec.action) == 'object')
+							node.wildcardaction = spec.action;
+						else if (type(spec.action) == 'object')
+							node.action = spec.action;
 
 						node.satisfied = check_depends(spec);
 					}
@@ -478,12 +487,12 @@ function session_retrieve(sid, allowed_users) {
 }
 
 function randomid(num_bytes) {
-	let bytes = [];
+	let data = readfile('/dev/urandom', num_bytes);
 
-	while (num_bytes-- > 0)
-		push(bytes, sprintf('%02x', rand() % 256));
+	if (length(data) != num_bytes)
+		return null;
 
-	return join('', bytes);
+	return hexenc(data);
 }
 
 function session_setup(user, pass, path) {
@@ -500,16 +509,25 @@ function session_setup(user, pass, path) {
 			ubus_rpc_session: login.ubus_rpc_session,
 			values: { token: randomid(16) }
 		});
-		syslog(LOG_INFO|LOG_AUTHPRIV, sprintf("luci: accepted login on /%s for %s from %s",
-			join('/', path), user || "?", http.getenv("REMOTE_ADDR") || "?"));
+		syslog(LOG_INFO|LOG_AUTHPRIV, "luci: accepted login on /%s for %s from %s",
+			join('/', map(path, p => urlencode(p))), urlencode(user || "?"), http.getenv("REMOTE_ADDR") || "?");
 
 		return session_retrieve(login.ubus_rpc_session);
 	}
 
-	syslog(LOG_WARNING|LOG_AUTHPRIV, sprintf("luci: failed login on /%s for %s from %s",
-		join('/', path), user || "?", http.getenv("REMOTE_ADDR") || "?"));
+	syslog(LOG_WARNING|LOG_AUTHPRIV, "luci: failed login on /%s for %s from %s",
+		join('/', map(path, p => urlencode(p))), urlencode(user || "?"), http.getenv("REMOTE_ADDR") || "?");
 
 	closelog();
+}
+
+function set_auth_required_plugins(session, plugin_ids) {
+	ubus.call("session", "set", {
+		ubus_rpc_session: session.sid,
+		values: {
+			pending_auth_plugins: (type(plugin_ids) == 'array') ? plugin_ids : null
+		}
+	});
 }
 
 function check_authentication(method) {
@@ -635,16 +653,27 @@ function resolve_page(tree, request_path) {
 		if (!login && node.auth?.login)
 			login = true;
 
+		/* If this node is marked as wildcard, check if the next segment
+		 * matches a child node. Only apply wildcard behaviour (capturing
+		 * remaining segments as args) if no child matches, allowing
+		 * deeper routes like foo/bar/* to work alongside
+		 * foo/*
+		 */
 		if (node.wildcard) {
-			ctx.request_args = [];
-			ctx.request_path = ctx.path ? [ ...ctx.path ] : [];
+			let next_segment = request_path[i + 1];
+			let has_matching_child = next_segment && node.children?.[next_segment]?.satisfied;
 
-			while (++i < length(request_path)) {
-				push(ctx.request_path, request_path[i]);
-				push(ctx.request_args, request_path[i]);
+			if (!has_matching_child) {
+				ctx.request_args = [];
+				ctx.request_path = ctx.path ? [ ...ctx.path ] : [];
+
+				while (++i < length(request_path)) {
+					push(ctx.request_path, request_path[i]);
+					push(ctx.request_args, request_path[i]);
+				}
+
+				break;
 			}
-
-			break;
 		}
 	}
 
@@ -730,7 +759,7 @@ function lookup(...segments) {
 			push(path, name);
 
 	for (let name in path) {
-		node = node.children[name];
+		node = node.children?.[name];
 
 		if (!node)
 			return null;
@@ -917,6 +946,19 @@ dispatch = function(_http, path) {
 					pass = http.formvalue('luci_password');
 				}
 
+				let auth_check = get_challenges(http, user ?? 'root');
+				let auth_fields = null;
+				let auth_message = null;
+				let auth_html = null;
+				let auth_assets = null;
+
+				if (auth_check.pending) {
+					auth_fields = auth_check.fields;
+					auth_message = auth_check.message;
+					auth_html = auth_check.html;
+					auth_assets = auth_check.assets;
+				}
+
 				if (user != null && pass != null)
 					session = session_setup(user, pass, resolved.ctx.request_path);
 
@@ -926,7 +968,15 @@ dispatch = function(_http, path) {
 					http.status(403, 'Forbidden');
 					http.header('X-LuCI-Login-Required', 'yes');
 
-					let scope = { duser: 'root', fuser: user };
+					// Show login form with 2FA fields if required
+					let scope = {
+						duser: 'root',
+						fuser: user,
+						auth_fields: auth_fields,
+						auth_message: auth_message,
+						auth_html: auth_html,
+						auth_assets: auth_assets
+					};
 					let theme_sysauth = `themes/${basename(runtime.env.media)}/sysauth`;
 
 					if (runtime.is_ucode_template(theme_sysauth) || runtime.is_lua_template(theme_sysauth)) {
@@ -941,11 +991,60 @@ dispatch = function(_http, path) {
 					return runtime.render('sysauth', scope);
 				}
 
+				let auth_user = session.data?.username;
+				if (!auth_user)
+					auth_user = user;
+
+				// Compute required plugin list once for authenticated user and bind it to the temporary session.
+				auth_check = get_challenges(http, auth_user);
+				if (auth_check.pending) {
+					let required_plugin_ids = map(auth_check.challenges, c => c.uuid);
+					set_auth_required_plugins(session, required_plugin_ids);
+
+					// Verify exactly the plugin list stored in this temporary session
+					let auth_verify = verify(http, auth_user, required_plugin_ids);
+
+					if (!auth_verify.success) {
+						// Additional auth failed or not provided
+						// Destroy the temporary session to prevent bypass
+						ubus.call("session", "destroy", { ubus_rpc_session: session.sid });
+
+						resolved.ctx.path = [];
+						http.status(403, 'Forbidden');
+						http.header('X-LuCI-Login-Required', 'yes');
+
+						let scope = {
+							duser: 'root',
+							fuser: user,
+							auth_plugin: length(auth_check.challenges) ? auth_check.challenges[0].name : null,
+							auth_fields: auth_check.fields,
+							auth_message: auth_verify.message ?? auth_check.message,
+							auth_html: auth_check.html,
+							auth_assets: auth_check.assets
+						};
+
+						let theme_sysauth = `themes/${basename(runtime.env.media)}/sysauth`;
+
+						if (runtime.is_ucode_template(theme_sysauth) || runtime.is_lua_template(theme_sysauth)) {
+							try {
+								return runtime.render(theme_sysauth, scope);
+							}
+							catch (e) {
+								runtime.env.media_error = `${e}`;
+							}
+						}
+
+						return runtime.render('sysauth', scope);
+					}
+
+					set_auth_required_plugins(session, null);
+				}
+
 				let cookie_name = (http.getenv('HTTPS') == 'on') ? 'sysauth_https' : 'sysauth_http',
 				    cookie_secure = (http.getenv('HTTPS') == 'on') ? '; secure' : '';
 
 				http.header('Set-Cookie', `${cookie_name}=${session.sid}; path=${build_url()}; SameSite=strict; HttpOnly${cookie_secure}`);
-				http.redirect(build_url(...resolved.ctx.request_path));
+				http.redirect(build_url(...(length(resolved.ctx.request_path) ? resolved.ctx.request_path : resolved.ctx.path)));
 
 				return;
 			}
@@ -985,6 +1084,11 @@ dispatch = function(_http, path) {
 		}
 
 		let action = resolved.node.action;
+
+		/* If this node matched a wildcard and we have request args,
+		 * prefer the wildcard-specific action when defined. */
+		if (length(resolved.ctx.request_args) && type(resolved.node.wildcardaction) == 'object')
+			action = resolved.node.wildcardaction;
 
 		if (action?.type == 'arcombine')
 			action = length(resolved.ctx.request_args) ? action.targets?.[1] : action.targets?.[0];

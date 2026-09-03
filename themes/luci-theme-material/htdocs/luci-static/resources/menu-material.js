@@ -4,7 +4,7 @@
 
 return baseclass.extend({
 	__init__() {
-		ui.menu.load().then(L.bind(this.render, this));
+		ui.menu.load().then((tree) => this.render(tree));
 	},
 
 	render(tree) {
@@ -45,7 +45,7 @@ return baseclass.extend({
 		const ul2 = a.nextElementSibling;
 
 		document.querySelectorAll('li.slide.active').forEach(function(li) {
-			if (li !== a.parentNode || li == ul1) {
+			if (li !== ul1) {
 				li.classList.remove('active');
 				li.childNodes[0].classList.remove('active');
 			}

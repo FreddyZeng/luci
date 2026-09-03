@@ -6,13 +6,6 @@
 'require rpc';
 'require form';
 
-const callInitAction = rpc.declare({
-	object: 'luci',
-	method: 'setInitAction',
-	params: [ 'name', 'action' ],
-	expect: { result: false }
-});
-
 const callUpnpGetStatus = rpc.declare({
 	object: 'luci.upnp',
 	method: 'get_status',
@@ -65,7 +58,7 @@ return view.extend({
 				rule.extport,
 				rule.proto,
 				expires_str,
-				rule.descr,
+				'%h'.format(rule.descr),
 				E('button', {
 					'class': 'btn cbi-button-remove',
 					'click': L.bind(handleDelRule, this, rule.num)
@@ -144,6 +137,9 @@ return view.extend({
 		o = s.taboption('setup', form.Flag, 'enable_natpmp', _('Enable PCP/NAT-PMP protocols'));
 		o.default = '1';
 
+		s.taboption('setup', form.Flag, 'ext_allow_private_ipv4', _('Allow private IPv4'),
+			_('Enable forwarding for private/reserved IPv4 address'));
+
 		o = s.taboption('setup', form.Flag, 'igdv1', _('UPnP IGDv1 compatibility mode'),
 			_('Advertise as IGDv1 (IPv4 only) device instead of IGDv2'));
 		o.default = '1';
@@ -170,9 +166,6 @@ return view.extend({
 		o.depends('use_stun', '1');
 		o.datatype = 'port';
 		o.placeholder = '3478';
-
-		s.taboption('advanced', form.Flag, 'force_forwarding', _('Force forwarding'),
-			_('Force forwarding ports even the network is behind NAT'));
 
 		o = s.taboption('advanced', form.Flag, 'secure_mode', _('Enable secure mode'),
 			_('Allow adding port maps for requesting IP addresses only'));

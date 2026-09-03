@@ -1,9 +1,7 @@
 local api = require "luci.passwall.api"
-local uci = api.uci
-local appname = "passwall"
-local has_ss = api.is_finded("ss-redir")
+api.set_default_cbi()
+
 local has_ss_rust = api.is_finded("sslocal")
-local has_trojan_plus = api.is_finded("trojan-plus")
 local has_singbox = api.finded_com("sing-box")
 local has_xray = api.finded_com("xray")
 local has_hysteria2 = api.finded_com("hysteria")
@@ -12,17 +10,10 @@ local trojan_type = {}
 local vmess_type = {}
 local vless_type = {}
 local hysteria2_type = {}
-if has_ss then
-	local s = "shadowsocks-libev"
-	table.insert(ss_type, s)
-end
+local xray_version = api.get_app_version("xray")
 if has_ss_rust then
 	local s = "shadowsocks-rust"
 	table.insert(ss_type, s)
-end
-if has_trojan_plus then
-	local s = "trojan-plus"
-	table.insert(trojan_type, s)
 end
 if has_singbox then
 	local s = "sing-box"
@@ -38,42 +29,25 @@ if has_xray then
 	table.insert(ss_type, s)
 	table.insert(vmess_type, s)
 	table.insert(vless_type, s)
+	if api.compare_versions(xray_version, ">=", "26.1.13") then
+		table.insert(hysteria2_type, s)
+	end
 end
 if has_hysteria2 then
 	local s = "hysteria2"
 	table.insert(hysteria2_type, s)
 end
 
-m = Map(appname)
+m = Map()
 
-function m.commit_handler(self)
-	if self.no_commit then
-		return
-	end
-	self.uci:foreach(appname, "subscribe_list", function(e)
+function m.on_before_save(self)
+	self:foreach("subscribe_list", function(e)
 		self:del(e[".name"], "md5")
 	end)
 end
 
-if api.is_js_luci() then
-	m.apply_on_parse = false
-	m.on_after_apply = function(self)
-		uci:foreach(appname, "subscribe_list", function(e)
-			uci:delete(appname, e[".name"], "md5")
-		end)
-		uci:commit(appname)
-		api.showMsg_Redirect()
-	end
-end
-
-m.render = function(self, ...)
-	Map.render(self, ...)
-	api.optimize_cbi_ui()
-end
-
 -- [[ Subscribe Settings ]]--
-s = m:section(TypedSection, "global_subscribe", "")
-s.anonymous = true
+s = m:section(NamedSection, "@global_subscribe[0]", "global_subscribe")
 
 o = s:option(ListValue, "filter_keyword_mode", translate("Filter keyword Mode"))
 o:value("0", translate("Close"))
@@ -88,6 +62,7 @@ o = s:option(DynamicList, "filter_keep_list", translate("Keep List"))
 
 if #ss_type > 0 then
 	o = s:option(ListValue, "ss_type", translatef("%s Node Use Type", "Shadowsocks"))
+	o:value("", translate("Auto"))
 	for key, value in pairs(ss_type) do
 		o:value(value)
 	end
@@ -95,6 +70,7 @@ end
 
 if #trojan_type > 0 then
 	o = s:option(ListValue, "trojan_type", translatef("%s Node Use Type", "Trojan"))
+	o:value("", translate("Auto"))
 	for key, value in pairs(trojan_type) do
 		o:value(value)
 	end
@@ -102,31 +78,25 @@ end
 
 if #vmess_type > 0 then
 	o = s:option(ListValue, "vmess_type", translatef("%s Node Use Type", "VMess"))
+	o:value("", translate("Auto"))
 	for key, value in pairs(vmess_type) do
 		o:value(value)
-	end
-	if has_xray then
-		o.default = "xray"
 	end
 end
 
 if #vless_type > 0 then
 	o = s:option(ListValue, "vless_type", translatef("%s Node Use Type", "VLESS"))
+	o:value("", translate("Auto"))
 	for key, value in pairs(vless_type) do
 		o:value(value)
-	end
-	if has_xray then
-		o.default = "xray"
 	end
 end
 
 if #hysteria2_type > 0 then
 	o = s:option(ListValue, "hysteria2_type", translatef("%s Node Use Type", "Hysteria2"))
+	o:value("", translate("Auto"))
 	for key, value in pairs(hysteria2_type) do
 		o:value(value)
-	end
-	if has_hysteria2 then
-		o.default = "hysteria2"
 	end
 end
 
@@ -135,29 +105,21 @@ if #ss_type > 0 or #trojan_type > 0 or #vmess_type > 0 or #vless_type > 0 or #hy
 			translate("The configured type also applies to the core specified when manually importing nodes."))
 end
 
-o = s:option(ListValue, "domain_strategy", "Sing-box " .. translate("Domain Strategy"), translate("Set the default domain resolution strategy for the sing-box node."))
-o.default = ""
-o:value("", translate("Auto"))
-o:value("prefer_ipv4", translate("Prefer IPv4"))
-o:value("prefer_ipv6", translate("Prefer IPv6"))
-o:value("ipv4_only", translate("IPv4 Only"))
-o:value("ipv6_only", translate("IPv6 Only"))
-
 ---- Subscribe Delete All
 o = s:option(DummyValue, "_stop", translate("Delete All Subscribe Node"))
 o.rawhtml = true
 function o.cfgvalue(self, section)
 	return string.format(
-		[[<button type="button" class="cbi-button cbi-button-remove" onclick="return confirmDeleteAll()">%s</button>]],
+		[[<input type="button" class="btn cbi-button cbi-button-remove" onclick="return confirmDeleteAll()" value="%s" />]],
 		translate("Delete All Subscribe Node"))
 end
 
 o = s:option(DummyValue, "_update", translate("Manual subscription All"))
 o.rawhtml = true
 o.cfgvalue = function(self, section)
-    return string.format([[
-        <button type="button" class="cbi-button cbi-button-apply" onclick="ManualSubscribeAll()">%s</button>]],
-	 translate("Manual subscription All"))
+	return string.format([[
+		<input type="button" class="btn cbi-button cbi-button-apply" onclick="ManualSubscribeAll()" value="%s" />]],
+		 translate("Manual subscription All"))
 end
 
 s = m:section(TypedSection, "subscribe_list", "", "<font color='red'>" .. translate("When adding a new subscription, please save and apply before manually subscribing. If you only change the subscription URL, you can subscribe manually, and the system will save it automatically.") .. "</font>")
@@ -167,27 +129,55 @@ s.sortable = true
 s.template = "cbi/tblsection"
 s.extedit = api.url("node_subscribe_config", "%s")
 function s.create(e, t)
-	m.no_commit = true
-	local id = TypedSection.create(e, t)
-	luci.http.redirect(e.extedit:format(id))
+	local uid = "sub_" .. api.gen_random_char(5)
+	TypedSection.create(e, uid)
+	m:set(uid, "hysteria_up_mbps", "100")
+	m:set(uid, "hysteria_down_mbps", "100")
+	luci.http.redirect(e.extedit:format(uid))
 end
 
 o = s:option(Value, "remark", translate("Remarks"))
 o.width = "auto"
 o.rmempty = false
-o.validate = function(self, value, t)
-	if value then
-		local count = 0
-		m.uci:foreach(appname, "subscribe_list", function(e)
-			if e[".name"] ~= t and e["remark"] == value then
-				count = count + 1
+o.validate = function(self, value, section)
+	value = api.trim(value)
+	if value == "" then
+		return nil, translate("Remark cannot be empty.")
+	end
+	local duplicate = false
+	m:foreach(s.sectiontype, function(e)
+		if e[".name"] ~= section and e["remark"] and e["remark"]:lower() == value:lower() then
+			duplicate = true
+			return false
+		end
+	end)
+	if duplicate or value:lower() == "default" then
+		return nil, translate("This remark already exists, please change a new remark.")
+	end
+	return value
+end
+o.write = function(self, section, value)
+	local old = m:get(section, self.option) or ""
+	if old ~= value then
+		m:foreach("nodes", function(e)
+			if e["group"] and e["group"]:lower() == old:lower() then
+				m:set(e[".name"], "group", value)
+			end
+			if e["protocol"] and (e["protocol"] == "_balancing" or e["protocol"] == "_urltest") and e["node_group"] then
+				local gs = ""
+				for g in e["node_group"]:gmatch("%S+") do
+					if api.UrlEncode(old) == g then
+						gs = gs .. " " .. api.UrlEncode(value)
+					else
+						gs = gs .. " " .. g
+					end
+				end
+				gs = api.trim(gs)
+				m:set(e[".name"], "node_group", gs)
 			end
 		end)
-		if count > 0 then
-			return nil, translate("This remark already exists, please change a new remark.")
-		end
-		return value
 	end
+	return Value.write(self, section, value)
 end
 
 o = s:option(DummyValue, "_node_count", translate("Subscribe Info"))
@@ -201,8 +191,8 @@ o.cfgvalue = function(t, n)
 	end
 	str = str ~= "" and "<br>" .. str or ""
 	local num = 0
-	m.uci:foreach(appname, "nodes", function(s)
-		if s["add_from"] ~= "" and s["add_from"] == remark then
+	m:foreach("nodes", function(s)
+		if s["group"] and s["group"]:lower() == remark:lower() then
 			num = num + 1
 		end
 	end)
@@ -218,18 +208,20 @@ o.rawhtml = true
 function o.cfgvalue(self, section)
 	local remark = m:get(section, "remark") or ""
 	return string.format(
-		[[<button type="button" class="cbi-button cbi-button-remove" onclick="return confirmDeleteNode('%s')">%s</button>]],
+		[[<input type="button" class="btn cbi-button cbi-button-remove" onclick="return confirmDeleteNode('%s')" value="%s" />]],
 		remark, translate("Delete the subscribed node"))
 end
 
 o = s:option(DummyValue, "_update", translate("Manual subscription"))
 o.rawhtml = true
 o.cfgvalue = function(self, section)
-    return string.format([[
-        <button type="button" class="cbi-button cbi-button-apply" onclick="ManualSubscribe('%s')">%s</button>]],
-	section, translate("Manual subscription"))
+	return string.format([[
+		<input type="button" class="btn cbi-button cbi-button-apply" onclick="ManualSubscribe('%s')" value="%s" />]],
+		section, translate("Manual subscription"))
 end
 
-s:append(Template(appname .. "/node_subscribe/js"))
+m:appendTemplate("/cbi/sortable", {sectiontype = s.sectiontype})
 
-return m
+m:appendTemplate("/node_subscribe/js")
+
+return api.return_map(m)

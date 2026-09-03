@@ -4,24 +4,23 @@ local openclash = "openclash"
 local uci = luci.model.uci.cursor()
 local fs = require "luci.openclash"
 local sys = require "luci.sys"
+local HTTP = require "luci.http"
+local DISP = require "luci.dispatcher"
 local sid = arg[1]
 local uuid = luci.sys.exec("cat /proc/sys/kernel/random/uuid")
+local file_path = fs.get_file_path_from_request()
+
+if not file_path then
+	HTTP.redirect(DISP.build_url("admin", "services", "openclash", "servers"))
+	return
+end
 
 font_red = [[<b style=color:red>]]
 font_off = [[</b>]]
-bold_on  = [[<strong>]]
+bold_on = [[<strong>]]
 bold_off = [[</strong>]]
 
-function IsYamlFile(e)
-   e=e or""
-   local e=string.lower(string.sub(e,-5,-1))
-   return e == ".yaml"
-end
-function IsYmlFile(e)
-   e=e or""
-   local e=string.lower(string.sub(e,-4,-1))
-   return e == ".yml"
-end
+
 
 local encrypt_methods_ss = {
 	-- stream
@@ -99,17 +98,17 @@ local obfs = {
 
 m = Map(openclash, translate("Edit Server"))
 m.pageaction = false
-m.redirect = luci.dispatcher.build_url("admin/services/openclash/servers")
+m.redirect = DISP.build_url("admin/services/openclash/servers") .. "?file=" .. HTTP.urlencode(file_path)
 
 if m.uci:get(openclash, sid) ~= "servers" then
-	luci.http.redirect(m.redirect)
+	HTTP.redirect(m.redirect)
 	return
 end
 
 -- [[ Servers Setting ]] --
 s = m:section(NamedSection, sid, "servers")
 s.anonymous = true
-s.addremove   = false
+s.addremove = false
 
 o = s:option(DummyValue, "server_url", "SS/SSR/VMESS/TROJAN URL")
 o.rawhtml = true
@@ -122,18 +121,13 @@ local e,a={}
 for t,f in ipairs(fs.glob("/etc/openclash/config/*"))do
 	a=fs.stat(f)
 	if a then
-    e[t]={}
-    e[t].name=fs.basename(f)
-    if IsYamlFile(e[t].name) or IsYmlFile(e[t].name) then
-       o:value(e[t].name)
-    end
-  end
+		e[t]={}
+		e[t].name=fs.basename(f)
+		if fs.IsYamlExt(e[t].name) then
+			o:value(e[t].name)
+		end
+	end
 end
-
-o = s:option(Flag, "manual", translate("Custom Tag"))
-o.rmempty = false
-o.default = "0"
-o.description = translate("Mark as Custom Node to Prevent Retention config from being Deleted When Enabled")
 
 o = s:option(ListValue, "type", translate("Server Node Type"))
 o:value("ss", translate("Shadowsocks"))
@@ -148,11 +142,14 @@ o:value("tuic", translate("Tuic"))
 o:value("snell", translate("Snell"))
 o:value("mieru", translate("Mieru"))
 o:value("anytls", translate("AnyTLS"))
+o:value("sudoku", translate("Sudoku"))
 o:value("socks5", translate("Socks5"))
 o:value("http", translate("HTTP(S)"))
 o:value("direct", translate("DIRECT"))
 o:value("dns", translate("DNS"))
 o:value("ssh", translate("SSH"))
+o:value("masque", translate("MASQUE"))
+o:value("trusttunnel", translate("TrustTunnel"))
 
 o.description = translate("Using incorrect encryption mothod may causes service fail to start")
 
@@ -174,10 +171,13 @@ o:depends("type", "wireguard")
 o:depends("type", "tuic")
 o:depends("type", "mieru")
 o:depends("type", "anytls")
+o:depends("type", "sudoku")
 o:depends("type", "snell")
 o:depends("type", "socks5")
 o:depends("type", "http")
 o:depends("type", "ssh")
+o:depends("type", "masque")
+o:depends("type", "trusttunnel")
 
 o = s:option(Value, "port", translate("Server Port"))
 o.datatype = "port"
@@ -194,10 +194,13 @@ o:depends("type", "wireguard")
 o:depends("type", "tuic")
 o:depends("type", "mieru")
 o:depends("type", "anytls")
+o:depends("type", "sudoku")
 o:depends("type", "snell")
 o:depends("type", "socks5")
 o:depends("type", "http")
 o:depends("type", "ssh")
+o:depends("type", "masque")
+o:depends("type", "trusttunnel")
 
 o = s:option(Flag, "flag_port_hopping", translate("Enable Port Hopping"))
 o:depends("type", "hysteria")
@@ -222,6 +225,46 @@ o:depends("type", "trojan")
 o:depends("type", "hysteria2")
 o:depends("type", "mieru")
 o:depends("type", "anytls")
+
+-- [[ Sudoku ]]--
+o = s:option(Value, "sudoku_key", translate("Key"))
+o.rmempty = true
+o.placeholder = translate("<client_key>")
+o:depends("type", "sudoku")
+
+o = s:option(ListValue, "aead_method", translate("Aead-method"))
+o.rmempty = true
+o.default = "chacha20-poly1305"
+o:value("chacha20-poly1305")
+o:value("aes-128-gcm")
+o:value("none")
+o:depends("type", "sudoku")
+
+o = s:option(Value, "padding_min", translate("Padding-min"))
+o.rmempty = true
+o.datatype = "uinteger"
+o.placeholder = translate("2")
+o:depends("type", "sudoku")
+
+o = s:option(Value, "padding_max", translate("Padding-max"))
+o.rmempty = true
+o.datatype = "uinteger"
+o.placeholder = translate("7")
+o:depends("type", "sudoku")
+
+o = s:option(ListValue, "table_type", translate("Table-type"))
+o.rmempty = true
+o.default = "prefer_ascii"
+o:value("prefer_ascii")
+o:value("prefer_entropy")
+o:depends("type", "sudoku")
+
+o = s:option(ListValue, "http_mask", translate("Http-mask"))
+o.rmempty = true
+o.default = "true"
+o:value("true")
+o:value("false")
+o:depends("type", "sudoku")
 
 -- [[ Mieru ]]--
 o = s:option(Value, "port_range", translate("Port Range"))
@@ -258,7 +301,15 @@ o.placeholder = translate("127.0.0.1")
 o.datatype = "or(ip4addr, ip6addr)"
 o:depends("type", "tuic")
 
-o = s:option(Value, "tc_token", translate("Token"))
+o = s:option(Value, "tc_token", translate("Token (tuicV4 only)"))
+o.rmempty = true
+o:depends("type", "tuic")
+
+o = s:option(Value, "tc_uuid", translate("UUID (tuicV5 only)"))
+o.rmempty = true
+o:depends("type", "tuic")
+
+o = s:option(Value, "tc_password", translate("Password (tuicV5 only)"))
 o.rmempty = true
 o:depends("type", "tuic")
 
@@ -453,6 +504,8 @@ o:depends({type = "snell", snell_version = "3"})
 o:depends("type", "wireguard")
 o:depends("type", "direct")
 o:depends("type", "anytls")
+o:depends("type", "masque")
+o:depends("type", "trusttunnel")
 
 o = s:option(ListValue, "udp_over_tcp", translate("udp-over-tcp"))
 o.rmempty = true
@@ -494,6 +547,7 @@ o.default = "tcp"
 o:value("tcp", translate("tcp"))
 o:value("ws", translate("websocket (ws)"))
 o:value("grpc", translate("grpc"))
+o:value("xhttp", translate("xhttp"))
 o:depends("type", "vless")
 
 o = s:option(ListValue, "obfs_vmess", translate("obfs-mode"))
@@ -582,6 +636,21 @@ o.placeholder = translate("Host: v2ray.com")
 o:depends("obfs_vmess", "websocket")
 o:depends("obfs_vless", "ws")
 
+o = s:option(Value, "xhttp_opts_path", translate("xhttp-opts-path"))
+o.rmempty = true
+o.placeholder = translate("/path")
+o:depends("obfs_vless", "xhttp")
+
+o = s:option(Value, "xhttp_opts_host", translate("xhttp-opts-host"))
+o.rmempty = true
+o.placeholder = translate("xxx.com")
+o:depends("obfs_vless", "xhttp")
+
+o = s:option(Value, "vless_encryption", translate("encryption"))
+o.rmempty = true
+o.placeholder = translate("mlkem768x25519plus.native/xorpub/random.1rtt/0rtt.(padding len).(padding gap).(X25519 Password).(ML-KEM-768 Client)...")
+o:depends("obfs_vless", "tcp")
+
 o = s:option(Value, "vless_flow", translate("flow"))
 o.rmempty = true
 o.default = "xtls-rprx-direct"
@@ -641,6 +710,7 @@ o:depends("type", "hysteria")
 o:depends("type", "hysteria2")
 o:depends("type", "tuic")
 o:depends("type", "anytls")
+o:depends("type", "trusttunnel")
 
 -- [[ TLS ]]--
 o = s:option(ListValue, "tls", translate("TLS"))
@@ -688,6 +758,7 @@ o:depends("type", "http")
 o:depends("type", "hysteria")
 o:depends("type", "hysteria2")
 o:depends("type", "anytls")
+o:depends("type", "trusttunnel")
 
 -- [[ headers ]]--
 o = s:option(DynamicList, "http_headers", translate("headers"))
@@ -732,6 +803,7 @@ o:value("h2")
 o:value("http/1.1")
 o:depends("type", "trojan")
 o:depends("type", "anytls")
+o:depends("type", "trusttunnel")
 
 -- [[ alpn ]]--
 o = s:option(DynamicList, "hysteria_alpn", translate("alpn"))
@@ -881,7 +953,7 @@ o:value("true")
 o:value("false")
 o:depends("type", "vmess")
 
--- [[ AnyTLS ]]--
+-- [[ AnyTLS ]] --
 o = s:option(Value, "idle_session_check_interval", translate("idle-session-check-interval"))
 o.rmempty = true
 o.default = "30"
@@ -896,6 +968,70 @@ o = s:option(Value, "min_idle_session", translate("min-idle-session"))
 o.rmempty = true
 o.default = "0"
 o:depends("type", "anytls")
+
+-- [[ MASQUE ]] --
+o = s:option(Value, "masque_private_key", translate("private-key"))
+o:depends("type", "masque")
+o.rmempty = true
+
+o = s:option(Value, "masque_public_key", translate("public-key"))
+o:depends("type", "masque")
+o.rmempty = true
+
+o = s:option(Value, "masque_ip", translate("IP"))
+o:depends("type", "masque")
+o.rmempty = true
+
+o = s:option(Value, "masque_ipv6", translate("IPv6"))
+o:depends("type", "masque")
+o.rmempty = true
+
+o = s:option(Value, "masque_mtu", translate("MTU"))
+o:depends("type", "masque")
+o.rmempty = true
+
+o = s:option(ListValue, "masque_remote_dns_resolve", translate("Remote DNS Resolve"))
+o.rmempty = true
+o.default = "true"
+o:value("true")
+o:value("false")
+o:depends("type", "masque")
+
+o = s:option(DynamicList, "masque_dns", translate("DNS"))
+o.rmempty = true
+o.placeholder = translate("8.8.8.8")
+o:depends("type", "masque")
+
+-- [[ TrustTunnel ]] --
+o = s:option(Value, "trusttunnel_username", translate("Username"))
+o.rmempty = false
+o.placeholder = "user"
+o:depends("type", "trusttunnel")
+
+o = s:option(Value, "trusttunnel_password", translate("Password"))
+o.password = true
+o.rmempty = false
+o:depends("type", "trusttunnel")
+
+o = s:option(ListValue, "trusttunnel_health_check", translate("Health Check"))
+o.rmempty = true
+o.default = "true"
+o:value("true")
+o:value("false")
+o:depends("type", "trusttunnel")
+
+o = s:option(ListValue, "trusttunnel_quic", translate("QUIC"))
+o.rmempty = true
+o.default = "false"
+o:value("true")
+o:value("false")
+o:depends("type", "trusttunnel")
+
+o = s:option(ListValue, "trusttunnel_congestion_controller", translate("Congestion Controller"))
+o.rmempty = true
+o.default = "bbr"
+o:value("bbr")
+o:depends("type", "trusttunnel")
 
 -- [[ Fast Open ]]--
 o = s:option(ListValue, "fast_open", translate("Fast Open"))
@@ -955,6 +1091,7 @@ o:depends({type = "vmess", obfs_vmess = "http"})
 o:depends({type = "vmess", obfs_vmess = "h2"})
 o:depends({type = "vmess", obfs_vmess = "grpc"})
 o:depends("type", "anytls")
+o:depends("type", "trusttunnel")
 
 -- [[ ip version ]]--
 o = s:option(ListValue, "ip_version", translate("IP Version"))
@@ -1118,19 +1255,29 @@ function o.validate(self, value)
 	return value
 end
 
+o = s:option(Value, "dialer_proxy", translate("Dialer-proxy"))
+o.rmempty = true
+o.description = font_red..bold_on..translate("The added Dialer Proxy or Group Must Exist")..bold_off..font_off
+m.uci:foreach("openclash", "groups",
+function(s)
+	if s.name ~= "" and s.name ~= nil and (s.config == m.uci:get(openclash, sid, "config") or s.config == "all") then
+		o:value(s.name)
+	end
+end)
+
 o = s:option(DynamicList, "groups", translate("Proxy Group (Support Regex)"))
-o.description = font_red..bold_on..translate("No Need Set when Config Create, The added Proxy Groups Must Exist")..bold_off..font_off
+o.description = font_red..bold_on..translate("The added Proxy Groups Must Exist")..bold_off..font_off
 o.rmempty = true
 o:value("all", translate("All Groups"))
 m.uci:foreach("openclash", "groups",
-		function(s)
-			if s.name ~= "" and s.name ~= nil then
-			   o:value(s.name)
-			end
-		end)
+function(s)
+	if s.name ~= "" and s.name ~= nil and (s.config == m.uci:get(openclash, sid, "config") or s.config == "all") then
+		o:value(s.name)
+	end
+end)
 		
 local t = {
-    {Commit, Back}
+	{Commit, Back}
 }
 a = m:section(Table, t)
 
@@ -1138,16 +1285,16 @@ o = a:option(Button,"Commit", " ")
 o.inputtitle = translate("Commit Settings")
 o.inputstyle = "apply"
 o.write = function()
-   m.uci:commit(openclash)
-   luci.http.redirect(m.redirect)
+	m.uci:commit(openclash)
+	HTTP.redirect(m.redirect)
 end
 
 o = a:option(Button,"Back", " ")
 o.inputtitle = translate("Back Settings")
 o.inputstyle = "reset"
 o.write = function()
-   m.uci:revert(openclash, sid)
-   luci.http.redirect(m.redirect)
+	m.uci:revert(openclash, sid)
+	HTTP.redirect(m.redirect)
 end
 
 m:append(Template("openclash/toolbar_show"))

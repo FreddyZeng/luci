@@ -10,6 +10,38 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 5.12.1\n"
 
+#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:54
+msgid "%H: Attenuation on %pi"
+msgstr ""
+
+#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:363
+msgid "%H: CRC Errors on %pi"
+msgstr ""
+
+#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:133
+msgid "%H: Data rate on %pi"
+msgstr ""
+
+#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:178
+msgid "%H: Errored seconds on %pi"
+msgstr ""
+
+#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:95
+msgid "%H: Line flags on %pi"
+msgstr ""
+
+#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:13
+msgid "%H: Line uptime on %pi"
+msgstr ""
+
+#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:262
+msgid "%H: RETX Errors %pi"
+msgstr ""
+
+#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:31
+msgid "%H: SNR on %pi"
+msgstr ""
+
 #: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/mqtt.js:47
 msgid "0 - At most once"
 msgstr "0 - ஒரே நேரத்தில்"
@@ -35,11 +67,11 @@ msgstr "Apcups சொருகி உள்ளமைவு"
 msgid "Absolute values"
 msgstr "முழுமையான மதிப்புகள்"
 
-#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/iptables.js:68
+#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/iptables.js:69
 msgid "Add IPv4 rule selector"
 msgstr "ஐபிவி 4 விதி தேர்வாளரைச் சேர்க்கவும்"
 
-#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/iptables.js:68
+#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/iptables.js:69
 msgid "Add IPv6 rule selector"
 msgstr "IPv6 விதி தேர்வாளரைச் சேர்க்கவும்"
 
@@ -63,6 +95,14 @@ msgstr "இணைக்கப்பட்ட பயனர்களின் ம�
 msgid "Apply interval »"
 msgstr "இடைவெளியைப் பயன்படுத்துங்கள் »"
 
+#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:154
+msgid "Attainable Data Rate Down"
+msgstr ""
+
+#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:167
+msgid "Attainable Data Rate Up"
+msgstr ""
+
 #: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/email.js:47
 msgid "Awaiting email input at %s"
 msgstr "%s இல் மின்னஞ்சல் உள்ளீட்டிற்காக காத்திருக்கிறது"
@@ -77,7 +117,7 @@ msgid ""
 "shutdown, reboot, and/or sysupgrade"
 msgstr "ஆர்.ஆர்.டி புள்ளிவிவரங்களை காப்பு மற்றும் மீட்டமை"
 
-#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/collectd.js:59
+#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/collectd.js:57
 msgid "Base Directory"
 msgstr "அடிப்படை அடைவு"
 
@@ -90,15 +130,11 @@ msgstr "அடிப்படை கண்காணிப்பு"
 msgid "Basic process monitoring enabled"
 msgstr "அடிப்படை செயல்முறை கண்காணிப்பு இயக்கப்பட்டது"
 
-#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:100
-msgid "Bitrate"
-msgstr "பிட்ரேட்"
-
-#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:82
+#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:103
 msgid "Bitswap Down"
 msgstr "பிட்ச்வாப் கீழே"
 
-#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:77
+#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:115
 msgid "Bitswap Up"
 msgstr "பிட்ச்வாப் அப்"
 
@@ -143,7 +179,7 @@ msgstr "சி.எச்.வி சொருகி உள்ளமைவு"
 msgid "Cache collected data for"
 msgstr "கேச் சேகரித்த தரவு"
 
-#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/iptables.js:99
+#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/iptables.js:100
 msgid "Chain"
 msgstr "சங்கிலி"
 
@@ -180,8 +216,8 @@ msgstr "கலெக்ட்அவுட்கள்"
 msgid "CollectTopology"
 msgstr "கலெக்டோபாலசி"
 
-#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/collectd.js:46
-#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/collectd.js:49
+#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/collectd.js:44
+#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/collectd.js:47
 msgid "Collectd Settings"
 msgstr "சேகரிப்பு அமைப்புகள்"
 
@@ -189,11 +225,11 @@ msgstr "சேகரிப்பு அமைப்புகள்"
 msgid "Command monitoring enabled"
 msgstr "கட்டளை கண்காணிப்பு இயக்கப்பட்டது"
 
-#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/iptables.js:137
+#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/iptables.js:138
 msgid "Comment / Rule Number"
 msgstr "கருத்து / விதி எண்"
 
-#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/collectd.js:174
+#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/collectd.js:172
 msgid "Configure…"
 msgstr "உள்ளமைக்கவும்…"
 
@@ -256,31 +292,19 @@ msgstr "டிஎன்எச் சொருகி உள்ளமைவு"
 msgid "DSL"
 msgstr "டி.எச்.எல்"
 
-#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:65
-msgid "DSL Flags"
-msgstr "டி.எச்.எல் கொடிகள்"
-
-#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:52
-msgid "DSL Line Uptime"
-msgstr "டி.எச்.எல் வரி நேரம்"
-
-#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:13
-msgid "DSL Signal"
-msgstr "டி.எச்.எல் சிக்னல்"
-
-#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:128
+#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:148
 msgid "Data Rate Down"
 msgstr "தரவு விகிதம் குறைகிறது"
 
-#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:123
+#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:160
 msgid "Data Rate Up"
 msgstr "தரவு வீதம்"
 
-#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/collectd.js:74
+#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/collectd.js:72
 msgid "Data collection interval"
 msgstr "தரவு சேகரிப்பு இடைவெளி"
 
-#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/collectd.js:71
+#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/collectd.js:69
 msgid "Datasets definition file"
 msgstr "தரவுத்தொகுப்புகள் வரையறை கோப்பு"
 
@@ -292,11 +316,11 @@ msgstr "சிபியு அதிர்வெண் கண்காணிப�
 msgid "Dhcpleases"
 msgstr "Dhcplaes"
 
-#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/collectd.js:65
+#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/collectd.js:63
 msgid "Directory for collectd plugins"
 msgstr "சேகரிப்பு செருகுநிரல்களுக்கான அடைவு"
 
-#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/collectd.js:62
+#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/collectd.js:60
 msgid "Directory for sub-configurations"
 msgstr "துணை வடிவங்களுக்கான அடைவு"
 
@@ -369,7 +393,7 @@ msgstr "புள்ளிவிவரங்களை இயக்கவும�
 #: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/memory.js:12
 #: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/netlink.js:13
 #: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/network.js:12
-#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/nut.js:12
+#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/nut.js:10
 #: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/olsrd.js:12
 #: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/openvpn.js:13
 #: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/ping.js:12
@@ -385,7 +409,7 @@ msgstr "புள்ளிவிவரங்களை இயக்கவும�
 msgid "Enable this plugin"
 msgstr "இந்த சொருகி இயக்கவும்"
 
-#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/collectd.js:113
+#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/collectd.js:111
 msgid "Enabled"
 msgstr "இயக்கப்பட்டது"
 
@@ -401,10 +425,6 @@ msgstr "என்ட்ரோபி சொருகி உள்ளமைவு"
 #: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/entropy.js:10
 msgid "Entropy monitoring enabled"
 msgstr "என்ட்ரோபி கண்காணிப்பு இயக்கப்பட்டது"
-
-#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:136
-msgid "Errors"
-msgstr "பிழைகள்"
 
 #: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/graphs.js:206
 msgid "Every 30 seconds"
@@ -448,6 +468,30 @@ msgstr "கூடுதல் உருப்படிகள்"
 msgid "False"
 msgstr "தவறு"
 
+#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:386
+msgid "Far CRC Errors"
+msgstr ""
+
+#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:226
+msgid "Far Errored Seconds"
+msgstr ""
+
+#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:242
+msgid "Far Loss of Signal Seconds"
+msgstr ""
+
+#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:393
+msgid "Far Pre-emptive CRC Errors"
+msgstr ""
+
+#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:234
+msgid "Far Severely Errored Seconds"
+msgstr ""
+
+#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:250
+msgid "Far Unavailable Seconds"
+msgstr ""
+
 #: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/curl.js:14
 msgid "Fetch pages"
 msgstr "பக்கங்களைப் பெறுங்கள்"
@@ -484,7 +528,7 @@ msgstr ""
 msgid "Gather compression statistics"
 msgstr "சுருக்க புள்ளிவிவரங்களை சேகரிக்கவும்"
 
-#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/collectd.js:86
+#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/collectd.js:84
 msgid "General plugins"
 msgstr "பொது செருகுநிரல்கள்"
 
@@ -552,7 +596,7 @@ msgstr "விருந்தோம்பி"
 msgid "Host running chrony"
 msgstr "புரவலன் இயங்கும் குரோனி"
 
-#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/collectd.js:51
+#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/collectd.js:49
 msgid "Hostname"
 msgstr "புரவலன்பெயர்"
 
@@ -581,7 +625,7 @@ msgstr "IRQ சொருகி உள்ளமைவு"
 msgid "Ignore source addresses"
 msgstr "மூல முகவரிகளை புறக்கணிக்கவும்"
 
-#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/iptables.js:70
+#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/iptables.js:71
 msgid "Instance name"
 msgstr "சான்று பெயர்"
 
@@ -611,13 +655,13 @@ msgstr "Iptables சொருகி உள்ளமைவு"
 msgid "Leave unselected to automatically determine interfaces to monitor."
 msgstr "கண்காணிக்க இடைமுகங்களை தானாக தீர்மானிக்க தேர்வு செய்யப்படாமல் விடுங்கள்."
 
-#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:24
-msgid "Line Attenuation Down (LATN)"
-msgstr "வரி விழிப்புணர்வு கீழே (LATN)"
+#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:64
+msgid "Line Attenuation Down"
+msgstr ""
 
-#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:19
-msgid "Line Attenuation Up (LATN)"
-msgstr "வரி விழிப்புணர்வு (LATN)"
+#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:77
+msgid "Line Attenuation Up"
+msgstr ""
 
 #: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/rrdtool.js:44
 msgid ""
@@ -674,14 +718,6 @@ msgstr ""
 "'சராசரி RRA கள் மட்டுமே' பயன்படுத்தாதபோது சராசரிக்கு பதிலாக ஒரு காலத்திற்கான "
 "அதிகபட்ச மதிப்புகள் பயன்படுத்தப்படலாம்"
 
-#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:118
-msgid "Max. Attainable Data Rate (ATTNDR) Down"
-msgstr "அதிகபட்சம். அடையக்கூடிய தரவு வீதம் (ATTNDR) கீழே"
-
-#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:113
-msgid "Max. Attainable Data Rate (ATTNDR) Up"
-msgstr "அதிகபட்சம். அடையக்கூடிய தரவு வீதம் (ATTNDR) அப்"
-
 #: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/ping.js:36
 msgid "Maximum Missed Packets"
 msgstr "அதிகபட்சமாக தவறவிட்ட பாக்கெட்டுகள்"
@@ -710,7 +746,7 @@ msgstr "நினைவக கண்காணிப்பு இயக்கப�
 #: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/df.js:89
 #: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/disk.js:32
 #: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/interface.js:21
-#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/irq.js:45
+#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/irq.js:44
 #: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/iwinfo.js:25
 #: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/netlink.js:41
 #: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/sensors.js:49
@@ -818,7 +854,7 @@ msgid_plural "Monitoring all but %d interfaces"
 msgstr[0] "ஒரு இடைமுகத்தைத் தவிர மற்ற அனைத்தையும் கண்காணித்தல்"
 msgstr[1] "%d இடைமுகங்களைத் தவிர மற்ற அனைத்தையும் கண்காணித்தல்"
 
-#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/irq.js:56
+#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/irq.js:55
 msgid "Monitoring all but one interrupt"
 msgid_plural "Monitoring all but %d interrupts"
 msgstr[0] "ஒரு குறுக்கீட்டைத் தவிர மற்ற அனைத்தையும் கண்காணித்தல்"
@@ -845,7 +881,7 @@ msgstr "%s, %s, %s தவிர அனைத்தையும் கண்க�
 msgid "Monitoring all interfaces"
 msgstr "அனைத்து இடைமுகங்களையும் கண்காணித்தல்"
 
-#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/irq.js:54
+#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/irq.js:53
 msgid "Monitoring all interrupts"
 msgstr "அனைத்து குறுக்கீடுகளையும் கண்காணித்தல்"
 
@@ -871,7 +907,7 @@ msgid_plural "Monitoring %d OpenVPN instances"
 msgstr[0] "ஒரு OpenVPN உதாரணத்தை கண்காணித்தல்"
 msgstr[1] "%d openvpn நிகழ்வுகளை கண்காணித்தல்"
 
-#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/nut.js:21
+#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/nut.js:19
 msgid "Monitoring one UPS"
 msgid_plural "Monitoring %d UPSes"
 msgstr[0] "ஒரு யுபிஎச் கண்காணித்தல்"
@@ -898,7 +934,7 @@ msgid_plural "Monitoring %d interfaces"
 msgstr[0] "ஒரு இடைமுகத்தை கண்காணித்தல்"
 msgstr[1] "%d இடைமுகங்களை கண்காணித்தல்"
 
-#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/irq.js:58
+#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/irq.js:57
 msgid "Monitoring one interrupt"
 msgid_plural "Monitoring %d interrupts"
 msgstr[0] "ஒரு குறுக்கீட்டை கண்காணித்தல்"
@@ -949,6 +985,30 @@ msgstr "MQTT சொருகி இயக்கப்பட்டது"
 msgid "Name"
 msgstr "பெயர்"
 
+#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:374
+msgid "Near CRC Errors"
+msgstr ""
+
+#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:198
+msgid "Near Errored seconds"
+msgstr ""
+
+#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:212
+msgid "Near Loss of Signal Seconds"
+msgstr ""
+
+#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:380
+msgid "Near Pre-emptive CRC Errors"
+msgstr ""
+
+#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:205
+msgid "Near Severely Errored Seconds"
+msgstr ""
+
+#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:219
+msgid "Near Unavailable Seconds"
+msgstr ""
+
 #: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/netlink.js:7
 #: applications/luci-app-statistics/root/usr/share/luci/statistics/plugins/netlink.json:2
 msgid "Netlink"
@@ -970,21 +1030,13 @@ msgstr "பிணைய சொருகி உள்ளமைவு"
 msgid "Network communication enabled"
 msgstr "பிணைய தொடர்பு இயக்கப்பட்டது"
 
-#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/collectd.js:87
+#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/collectd.js:85
 msgid "Network plugins"
 msgstr "பிணைய செருகுநிரல்கள்"
 
 #: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/graphs.js:178
 msgid "No RRD data found"
 msgstr "ஆர்.ஆர்.டி தரவு எதுவும் கிடைக்கவில்லை"
-
-#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:44
-msgid "Noise Margin Down (SNR)"
-msgstr "ஒலி விளிம்பு கீழே (எச்.என்.ஆர்)"
-
-#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:39
-msgid "Noise Margin Up (SNR)"
-msgstr "ஒலி விளிம்பு (எச்.என்.ஆர்)"
 
 #: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/rrdtool.js:15
 msgid ""
@@ -998,7 +1050,7 @@ msgstr ""
 msgid "Notify level"
 msgstr "நிலை அறிவிக்கவும்"
 
-#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/collectd.js:77
+#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/collectd.js:75
 msgid "Number of threads for data collection"
 msgstr "தரவு சேகரிப்புக்கான நூல்களின் எண்ணிக்கை"
 
@@ -1028,7 +1080,7 @@ msgstr "OpenVPN சொருகி உள்ளமைவு"
 msgid "OpenVPN status files"
 msgstr "OpenVPN நிலை கோப்புகள்"
 
-#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/collectd.js:88
+#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/collectd.js:86
 msgid "Output plugins"
 msgstr "வெளியீட்டு செருகுநிரல்கள்"
 
@@ -1053,7 +1105,7 @@ msgstr "பிங்"
 msgid "Ping Plugin Configuration"
 msgstr "பிங் சொருகி உள்ளமைவு"
 
-#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/collectd.js:136
+#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/collectd.js:134
 msgid "Plugin is disabled"
 msgstr "சொருகி முடக்கப்பட்டுள்ளது"
 
@@ -1124,6 +1176,38 @@ msgstr "Rrdtool"
 msgid "RRDTool Plugin Configuration"
 msgstr "Rrdtool சொருகி உள்ளமைவு"
 
+#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:343
+msgid "RX Corrected Far"
+msgstr ""
+
+#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:305
+msgid "RX Corrected Near"
+msgstr ""
+
+#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:319
+msgid "RX Corrupted Far"
+msgstr ""
+
+#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:284
+msgid "RX Corrupted Near"
+msgstr ""
+
+#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:335
+msgid "RX Retransmitted Far"
+msgstr ""
+
+#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:298
+msgid "RX Retransmitted Near"
+msgstr ""
+
+#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:327
+msgid "RX Uncorrected Protected Far"
+msgstr ""
+
+#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:291
+msgid "RX Uncorrected Protected Near"
+msgstr ""
+
 #: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/cpu.js:27
 msgid "Report also the value for the idle metric"
 msgstr "செயலற்ற மெட்ரிக்கான மதிப்பையும் புகாரளிக்கவும்"
@@ -1148,25 +1232,9 @@ msgstr "தக்கவைத்து"
 msgid "Rows per RRA"
 msgstr "RRA க்கு வரிசைகள்"
 
-#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/iptables.js:161
+#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/iptables.js:162
 msgid "Rule monitoring enabled"
 msgstr "விதி கண்காணிப்பு இயக்கப்பட்டது"
-
-#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:142
-msgid "Rx Corrupted Far"
-msgstr "ஆர்எக்ச் வெகுதூரம் சிதைந்தது"
-
-#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:147
-msgid "Rx Corrupted Near"
-msgstr "ஆர்எக்ச் அருகில் சிதைந்தது"
-
-#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:152
-msgid "Rx Retransmitted Far"
-msgstr "ஆர்எக்ச் வெகு தொலைவில் உள்ளது"
-
-#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:162
-msgid "Rx Retransmitted Near"
-msgstr "ஆர்எக்ச் அருகில் மீண்டும் அனுப்பப்பட்டது"
 
 #: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/snmp6.js:7
 msgid "SNMP6"
@@ -1175,6 +1243,14 @@ msgstr "SNMP6"
 #: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/snmp6.js:7
 msgid "SNMP6 Plugin Configuration"
 msgstr "SNMP6 சொருகி உள்ளமைவு"
+
+#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:41
+msgid "SNR Margin Down"
+msgstr ""
+
+#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:45
+msgid "SNR Margin Up"
+msgstr ""
 
 #: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/sqm.js:7
 msgid "SQM"
@@ -1189,7 +1265,7 @@ msgstr "சதுர-கேக்"
 msgid "Script"
 msgstr "ச்கிரிப்ட்"
 
-#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/collectd.js:74
+#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/collectd.js:72
 #: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/chrony.js:25
 #: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/ping.js:31
 #: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/rrdtool.js:24
@@ -1256,13 +1332,13 @@ msgstr "செயலற்ற நிலையை காட்டு"
 msgid "Show max values instead of averages"
 msgstr "சராசரிக்கு பதிலாக அதிகபட்ச மதிப்புகளைக் காட்டு"
 
-#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:34
-msgid "Signal Attenuation Down (SATN)"
-msgstr "சமிக்ஞை விழிப்புணர்வு கீழே (சாட்ன்)"
+#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:70
+msgid "Signal Attenuation Down"
+msgstr ""
 
-#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:29
-msgid "Signal Attenuation Up (SATN)"
-msgstr "சமிக்ஞை விழிப்புணர்வு (சாட்ன்)"
+#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:84
+msgid "Signal Attenuation Up"
+msgstr ""
 
 #: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/cpufreq.js:23
 msgid "Simple CPU frequency monitoring enabled"
@@ -1320,7 +1396,7 @@ msgstr "ச்பிளாச் குத்தகை சொருகி உள
 msgid "Statistics"
 msgstr "புள்ளிவிவரங்கள்"
 
-#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/collectd.js:127
+#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/collectd.js:125
 msgid "Status"
 msgstr "நிலை"
 
@@ -1402,7 +1478,15 @@ msgstr "பிணையம் பாக்கெட்டுகளுக்க�
 msgid "TTL for ping packets"
 msgstr "பிங் பாக்கெட்டுகளுக்கு டி.டி.எல்"
 
-#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/iptables.js:85
+#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:351
+msgid "TX Retransmitted Far"
+msgstr ""
+
+#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:312
+msgid "TX Retransmitted Near"
+msgstr ""
+
+#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/iptables.js:86
 msgid "Table"
 msgstr "அட்டவணை"
 
@@ -1435,7 +1519,7 @@ msgid ""
 msgstr ""
 "சிச்லாக் சொருகி டீமானிலிருந்து பதிவு செய்திகளைப் பெற்று அவற்றை சிச்லாக் அனுப்புகிறது."
 
-#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/iptables.js:132
+#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/iptables.js:133
 msgid "The chain name must not contain spaces"
 msgstr "சங்கிலி பெயரில் இடைவெளிகள் இருக்கக்கூடாது"
 
@@ -1443,7 +1527,7 @@ msgstr "சங்கிலி பெயரில் இடைவெளிகள�
 msgid "The chrony plugin will monitor chrony NTP server statistics"
 msgstr "குரோனி சொருகி குரோனி என்.டி.பி சேவையக புள்ளிவிவரங்களை கண்காணிக்கும்"
 
-#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/iptables.js:153
+#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/iptables.js:154
 msgid "The comment to match must not contain spaces"
 msgstr "பொருந்தக்கூடிய கருத்தில் இடைவெளிகள் இருக்கக்கூடாது"
 
@@ -1519,7 +1603,7 @@ msgstr ""
 "சில வாசல் மதிப்புகள் எட்டப்படும்போது மதிப்புகளைப் படிக்க அல்லது வெளிப்புற "
 "செயல்முறைகளுக்கு அறிவிக்க EXEC சொருகி வெளிப்புற கட்டளைகளைத் தொடங்குகிறது."
 
-#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/iptables.js:80
+#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/iptables.js:81
 msgid "The instance name must not contain spaces"
 msgstr "நிகழ்வு பெயரில் இடைவெளிகள் இருக்கக்கூடாது"
 
@@ -1729,24 +1813,16 @@ msgstr "தலைப்பு"
 msgid "True"
 msgstr "உண்மை"
 
-#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/collectd.js:80
+#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/collectd.js:78
 msgid "Try to look up fully qualified hostname"
 msgstr "முழு தகுதி வாய்ந்த ஓச்ட்பெயரைப் பார்க்க முயற்சிக்கவும்"
-
-#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:157
-msgid "Tx Retransmitted Far"
-msgstr "Tx மீண்டும் அனுப்பப்பட்டது"
-
-#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:167
-msgid "Tx Retransmitted Near"
-msgstr "Tx அருகில் மீண்டும் அனுப்பப்பட்டது"
 
 #: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/mqtt.js:20
 msgid "Type"
 msgstr "வகை"
 
 #: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/nut.js:7
-#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/nut.js:14
+#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/nut.js:12
 #: applications/luci-app-statistics/root/usr/share/luci/statistics/plugins/nut.json:2
 msgid "UPS"
 msgstr "யுபிஎச்"
@@ -1755,7 +1831,7 @@ msgstr "யுபிஎச்"
 msgid "UPS Plugin Configuration"
 msgstr "யுபிஎச் சொருகி உள்ளமைவு"
 
-#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/nut.js:14
+#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/nut.js:12
 msgid "UPS name in NUT ups@host format"
 msgstr "நட் யுபிஎச்@ஓச்ட் வடிவத்தில் யுபிஎச் பெயர்"
 
@@ -1771,7 +1847,7 @@ msgstr "UNIXSOCK"
 msgid "Unixsock Plugin Configuration"
 msgstr "UNIXSOCK செருகுநிரல் உள்ளமைவு"
 
-#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:58
+#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:22
 #: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/uptime.js:15
 #: applications/luci-app-statistics/root/usr/share/luci/statistics/plugins/uptime.json:2
 msgid "Uptime"
@@ -1789,7 +1865,7 @@ msgstr "நேரம் கண்காணிப்பு இயக்கப்�
 msgid "Use improved naming schema"
 msgstr "மேம்பட்ட பெயரிடும் திட்டத்தைப் பயன்படுத்தவும்"
 
-#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/collectd.js:68
+#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/collectd.js:66
 msgid "Used PID file"
 msgstr "பயன்படுத்தப்பட்ட PID கோப்பு"
 
@@ -1807,11 +1883,11 @@ msgstr "பயனர்கள்"
 msgid "Users Plugin Configuration"
 msgstr "பயனர்கள் சொருகி உள்ளமைவு"
 
-#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:92
+#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:109
 msgid "Vectoring Down"
 msgstr "கீழே திசையன்"
 
-#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:87
+#: applications/luci-app-statistics/htdocs/luci-static/resources/statistics/rrdtool/definitions/dsl.js:122
 msgid "Vectoring Up"
 msgstr "வெக்டரிங் அப்"
 
@@ -1891,7 +1967,7 @@ msgstr "கர்ல் சொருகி உள்ளமைவு"
 msgid "no summary"
 msgstr "சுருக்கம் இல்லை"
 
-#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/collectd.js:139
+#: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/collectd.js:137
 msgid "none"
 msgstr "எதுவுமில்லை"
 
@@ -1932,3 +2008,60 @@ msgstr "RRD அளவைக் குறைக்கிறது"
 #: applications/luci-app-statistics/htdocs/luci-static/resources/view/statistics/plugins/tcpconns.js:45
 msgid "summary of all ports"
 msgstr "அனைத்து துறைமுகங்களின் சுருக்கம்"
+
+#~ msgid "Bitrate"
+#~ msgstr "பிட்ரேட்"
+
+#~ msgid "DSL Flags"
+#~ msgstr "டி.எச்.எல் கொடிகள்"
+
+#~ msgid "DSL Line Uptime"
+#~ msgstr "டி.எச்.எல் வரி நேரம்"
+
+#~ msgid "DSL Signal"
+#~ msgstr "டி.எச்.எல் சிக்னல்"
+
+#~ msgid "Errors"
+#~ msgstr "பிழைகள்"
+
+#~ msgid "Line Attenuation Down (LATN)"
+#~ msgstr "வரி விழிப்புணர்வு கீழே (LATN)"
+
+#~ msgid "Line Attenuation Up (LATN)"
+#~ msgstr "வரி விழிப்புணர்வு (LATN)"
+
+#~ msgid "Max. Attainable Data Rate (ATTNDR) Down"
+#~ msgstr "அதிகபட்சம். அடையக்கூடிய தரவு வீதம் (ATTNDR) கீழே"
+
+#~ msgid "Max. Attainable Data Rate (ATTNDR) Up"
+#~ msgstr "அதிகபட்சம். அடையக்கூடிய தரவு வீதம் (ATTNDR) அப்"
+
+#~ msgid "Noise Margin Down (SNR)"
+#~ msgstr "ஒலி விளிம்பு கீழே (எச்.என்.ஆர்)"
+
+#~ msgid "Noise Margin Up (SNR)"
+#~ msgstr "ஒலி விளிம்பு (எச்.என்.ஆர்)"
+
+#~ msgid "Rx Corrupted Far"
+#~ msgstr "ஆர்எக்ச் வெகுதூரம் சிதைந்தது"
+
+#~ msgid "Rx Corrupted Near"
+#~ msgstr "ஆர்எக்ச் அருகில் சிதைந்தது"
+
+#~ msgid "Rx Retransmitted Far"
+#~ msgstr "ஆர்எக்ச் வெகு தொலைவில் உள்ளது"
+
+#~ msgid "Rx Retransmitted Near"
+#~ msgstr "ஆர்எக்ச் அருகில் மீண்டும் அனுப்பப்பட்டது"
+
+#~ msgid "Signal Attenuation Down (SATN)"
+#~ msgstr "சமிக்ஞை விழிப்புணர்வு கீழே (சாட்ன்)"
+
+#~ msgid "Signal Attenuation Up (SATN)"
+#~ msgstr "சமிக்ஞை விழிப்புணர்வு (சாட்ன்)"
+
+#~ msgid "Tx Retransmitted Far"
+#~ msgstr "Tx மீண்டும் அனுப்பப்பட்டது"
+
+#~ msgid "Tx Retransmitted Near"
+#~ msgstr "Tx அருகில் மீண்டும் அனுப்பப்பட்டது"

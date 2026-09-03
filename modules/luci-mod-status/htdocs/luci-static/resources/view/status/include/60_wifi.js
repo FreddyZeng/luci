@@ -205,7 +205,7 @@ return baseclass.extend({
 
 			for (let i = 0; i < radios_networks_hints.length; i++) {
 				tasks.push(L.resolveDefault(radios_networks_hints[i].getAssocList(), []).then(L.bind((net, list) => {
-					net.assoclist = list.sort((a, b) => { return a.mac > b.mac });
+					net.assoclist = list.sort((a, b) => a.mac.localeCompare(b.mac));
 				}, this, radios_networks_hints[i])));
 
 				if (hasWPS && uci.get('wireless', radios_networks_hints[i].sid, 'wps_pushbutton') == '1') {
@@ -224,7 +224,6 @@ return baseclass.extend({
 	},
 
 	render(data) {
-		const seen = {};
 		const radios = data[0];
 		const networks = data[1];
 		const hosthints = data[2];
@@ -234,7 +233,7 @@ return baseclass.extend({
 
 		const table = E('div', { 'class': 'network-status-table' });
 
-		for (let i = 0; i < radios.sort((a, b) => { a.getName() > b.getName() }).length; i++)
+		for (let i = 0; i < radios.sort((a, b) => a.getName().localeCompare(b.getName())).length; i++)
 			table.appendChild(this.renderbox(radios[i],
 				networks.filter(net => { return net.getWifiDeviceName() == radios[i].getName() })));
 
@@ -301,9 +300,9 @@ return baseclass.extend({
 				let hint;
 
 				if (name && ipv4 && ipv6)
-					hint = '%s <span class="hide-xs">(%s, %s)</span>'.format(name, ipv4, ipv6);
+					hint = '%h <span class="hide-xs">(%s, %s)</span>'.format(name, ipv4, ipv6);
 				else if (name && (ipv4 || ipv6))
-					hint = '%s <span class="hide-xs">(%s)</span>'.format(name, ipv4 || ipv6);
+					hint = '%h <span class="hide-xs">(%s)</span>'.format(name, ipv4 || ipv6);
 				else
 					hint = name || ipv4 || ipv6 || '?';
 

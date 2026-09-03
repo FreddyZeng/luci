@@ -35,10 +35,11 @@ return view.extend({
 		*/
 	],
 
-	retrieveLog: async function() {
+	async retrieveLog() {
 		return fs.exec_direct('/bin/dmesg', [ '-r' ]).then(logdata => {
 			let loglines = [];
 			let lastSeverity = null;
+			let lastTime = null;
 
 			logdata.trim().split(/\n/).forEach(line => {
 				const priorityMatch = line.match(/^<(\w+)>/);
@@ -49,6 +50,8 @@ return view.extend({
 				const cleanLine = line.replace(/^<\w+>/, '');
 				const timeMatch = cleanLine.match(/^\[\s*(\d+(?:\.\d+)?)\]/);
 				const time = timeMatch ? parseFloat(timeMatch[1]) : null;
+				if (time != null)
+					lastTime = time;
 
 				if (!isCont) {
 					lastSeverity = parseInt(tag, 10); // update severity
@@ -57,7 +60,7 @@ return view.extend({
 				loglines.push({
 					severity: isCont ? lastSeverity : parseInt(tag, 10),
 					isCont,
-					time,
+					time: time != null ? time : lastTime,
 					text: cleanLine
 				});
 			});
@@ -84,12 +87,10 @@ return view.extend({
 
 			// Filter by severity
 			loglines = loglines.filter(entry => {
-				if (!entry.isCont) {
-					if (!this.invertMinSeverity)
-						return (entry.severity >= this.minSeverity);
-					else
-						return (entry.severity < this.minSeverity);
-				}
+				if (this.invertMinSeverity)
+					return entry.severity < this.minSeverity;
+				else
+					return entry.severity >= this.minSeverity;
 			});
 
 			// Filter by text
@@ -113,7 +114,7 @@ return view.extend({
 		});
 	},
 
-	pollLog: async function() {
+	async pollLog() {
 		const element = document.getElementById('syslog');
 		if (element) {
 			const log = await this.retrieveLog();
@@ -122,12 +123,12 @@ return view.extend({
 		}
 	},
 
-	load: async function() {
+	async load() {
 		poll.add(this.pollLog.bind(this));
 		return await this.retrieveLog();
 	},
 
-	render: function(loglines) {
+	render(loglines) {
 		const scrollDownButton = E('button', { 
 				'id': 'scrollDownButton',
 				'class': 'cbi-button cbi-button-neutral',
@@ -193,7 +194,7 @@ return view.extend({
 			'id': 'logSeveritySelect',
 			'class': 'cbi-input-select',
 		},
-		this.severity.map(([val, tag, label]) =>
+		this.severity.map(([val, , label]) =>
 			E('option', { value: val }, label)
 		));
 

@@ -1,216 +1,8 @@
 <%+cbi/valueheader%>
-<style>
-.sub_div {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: nowrap;
-    width: calc(100% - 24px);
-    box-sizing: border-box;
-    min-width: 280px;
-    max-width: 350px;
-    margin: 0 auto;
-}
-
-.sub_div > span:first-child {
-    flex: 1;
-    min-width: 0;
-}
-
-.sub_tab{
-    display: block;
-    white-space: nowrap;
-    font-size: 12px;
-    margin: 0;
-    opacity: 0;
-    width: 100%;
-    max-width: 100%;
-    overflow: hidden;
-    box-sizing: border-box;
-}
-
-.sub_tab_show{
-    display: block;
-    white-space: nowrap;
-    font-size: 12px;
-    margin: 0;
-    -webkit-transition: all 1s;
-    -moz-transition: all 1s;
-    -ms-transition: all 1s;
-    -o-transition: all 1s;
-    transition: all 1s;
-    opacity: 1;
-    width: 100%;
-    max-width: 100%;
-    overflow: hidden;
-    box-sizing: border-box;
-}
-
-.sub_setting{
-    display: inline-block;
-    white-space: nowrap;
-    margin: 0;
-    opacity: 1;
-    vertical-align: middle;
-    line-height: 0;
-    flex-shrink: 0;
-    cursor: pointer;
-}
-
-.sub_setting img {
-    vertical-align: middle;
-    display: inline-block;
-    transition: opacity 0.3s ease;
-}
-
-.sub_setting:hover img {
-    opacity: 0.7;
-}
-
-.text_show{
-    color: #333333;
-    line-height: 1.2;
-}
-
-.progress_bar_bg {
-    border: 1px solid #999999;
-    background-color: #f5f5f5;
-    width: 100% !important;
-    max-width: 100% !important;
-    min-width: 220px;
-    box-sizing: border-box;
-    border-radius: 6px;
-    height: 36px;
-}
-
-.progress_bar_high {
-    background-color: #9edd9e;
-}
-
-.progress_bar_medium {
-    background-color: #ffc99f;
-}
-
-.progress_bar_low {
-    background-color: #ffb9b9;
-}
-
-:root[data-darkmode="true"] #icon_wrench {
-    -webkit-filter: invert(1);
-    filter: invert(1);
-}
-
-:root[data-darkmode="true"] #icon_arrow {
-    -webkit-filter: invert(1);
-    filter: invert(1);
-}
-
-:root[data-darkmode="true"] .text_show {
-    color: #e0e0e0;
-    line-height: 1.2;
-}
-
-:root[data-darkmode="true"] .progress_bar_bg {
-    border: 1px solid #666666;
-    background-color: #333333;
-}
-
-:root[data-darkmode="true"] .progress_bar_high {
-    background-color: #5da05d;
-}
-
-:root[data-darkmode="true"] .progress_bar_medium {
-    background-color: #cc8550;
-}
-
-:root[data-darkmode="true"] .progress_bar_low {
-    background-color: #cc6262;
-}
-
-@media (max-width: 1024px) {
-    .sub_tab, .sub_tab_show {
-        font-size: 11px;
-    }
-    
-    .progress_bar_bg {
-        min-width: 220px;
-    }
-    
-    .sub_div {
-        gap: 6px;
-        width: calc(100% - 20px);
-        margin: 0 10px;
-    }
-}
-
-@media (max-width: 768px) {
-    .sub_tab, .sub_tab_show {
-        font-size: 10px;
-    }
-    
-    .progress_bar_bg {
-        min-width: 200px;
-    }
-    
-    .sub_setting img {
-        height: 18px !important;
-    }
-    
-    .sub_div {
-        gap: 4px;
-        width: calc(100% - 16px);
-        margin: 0 8px;
-    }
-}
-
-@media (max-width: 480px) {
-    .sub_tab, .sub_tab_show {
-        font-size: 9px;
-    }
-    
-    .progress_bar_bg {
-        min-width: 180px !important;
-    }
-    
-    .sub_setting img {
-        height: 16px !important;
-    }
-    
-    .sub_div {
-        gap: 2px;
-        width: calc(100% - 12px);
-        margin: 0 6px;
-    }
-}
-
-@media (max-width: 320px) {
-    .sub_tab, .sub_tab_show {
-        font-size: 8px;
-    }
-    
-    .progress_bar_bg {
-        min-width: 160px !important;
-    }
-    
-    .sub_setting img {
-        height: 14px !important;
-    }
-    
-    .sub_div {
-        width: calc(100% - 8px);
-        margin: 0 4px;
-    }
-}
-
-.sub_div * {
-    flex-shrink: 0;
-}
-
-.sub_div > span:first-child {
-    flex-shrink: 1;
-}
-</style>
-
+<%
+    local fs = require "luci.openclash"
+    local plugin_version = fs.oc_version()
+%>
 <%
 	local fs = require "luci.openclash"
 	local val = self:cfgvalue(section)
@@ -218,147 +10,283 @@
 	local idname = math.random(1000)..(string.match(filename, "[%w_]+") or "")
 %>
 
-<div class="sub_div">
-    <span id='<%=idname%>' class="sub_tab"></span>
-    <span class="sub_setting">
-        <img id="icon_arrow" src='/luci-static/resources/openclash/img/arrow-clockwise-light.svg' height="20px" title='<%:Refresh%>' alt='<%:Refresh%>' onclick='return sub_info_refresh_<%=idname%>(this)'>
-    </span>
-    <span class="sub_setting">
-        <img id="icon_wrench" src='/luci-static/resources/openclash/img/wrench-light.svg' height="20px" title='<%:Specify URL%>' alt='<%:Specify URL%>' onclick='return set_subinfo_url_<%=idname%>(this,"<%=filename%>")'>
-    </span>
+<script src="/luci-static/resources/openclash/js/oc-icons.js?v=<%=plugin_version%>"></script>
+<div class="oc">
+    <div class="sub_div">
+        <span id='<%=idname%>' class="sub_tab"></span>
+        <button type="button" class="sub_setting" title='<%:Refresh%>' alt='<%:Refresh%>' onclick='return sub_info_refresh_<%=idname%>(true)'>
+            <svg viewBox="0 0 24 24"><use href="#oc-icon-refresh"/></svg>
+        </button>
+        <button type="button" class="sub_setting" title='<%:Specify URL%>' alt='<%:Specify URL%>' onclick='return setUrlConfig_<%=idname%>()'>
+            <svg viewBox="0 0 48 48"><use href="#oc-icon-chat"/></svg>
+        </button>
+        <button type="button" class="sub_setting" title='<%:Edit Subscription%>' alt='<%:Edit Subscription%>' onclick='return uploadConfig_<%=idname%>()'>
+            <svg width="14" height="14"><use href="#oc-icon-settings"/></svg>
+        </button>
+    </div>
 </div>
 
 <script type="text/javascript">//<![CDATA[
 
 var retry_<%=idname%> = 0;
 var s_<%=idname%>;
-sub_info_get_<%=idname%>();
-
-setTimeout(function(){
-    if (isDarkBackground(document.body)) {
-        document.documentElement.setAttribute('data-darkmode', 'true');
-    };
-}, 300);
+sub_info_refresh_<%=idname%>(false);
 
 function progressbar_<%=idname%>(v, m, pc, np, f, t, tr) {
     var screenWidth = window.innerWidth || document.documentElement.clientWidth;
     var fontSize = '12px';
-    var minWidth = '220px';
-    var topPosition = tr == "null" ? '6px' : '2px';
-    
+
     if (screenWidth <= 320) {
         fontSize = '8px';
-        minWidth = '160px';
-        topPosition = tr == "null" ? '8px' : '4px';
     } else if (screenWidth <= 480) {
         fontSize = '9px';
-        minWidth = '180px';
-        topPosition = tr == "null" ? '7px' : '3px';
     } else if (screenWidth <= 768) {
         fontSize = '10px';
-        minWidth = '200px';
-        topPosition = tr == "null" ? '6px' : '3px';
     } else if (screenWidth <= 1024) {
         fontSize = '11px';
-        minWidth = '220px';
-        topPosition = tr == "null" ? '6px' : '2px';
     }
-    
+
+    // Build title for native tooltip (format: "v / m (pc%)\nt (Remaining tr days)")
+    var titleText = v + ' / ' + m + ' (' + pc + '%%)';
+    if (t && t !== 'null' && tr && tr !== 'null' && parseInt(tr) > 0) {
+        titleText += '\n' + t + ' (<%:Remaining%> ' + tr + ' <%:days%>)';
+    }
+
     return String.format(
-        '<div class="progress_bar_bg" style="position:relative; border-radius: 6px; min-width: %s; display: flex; align-items: center;">' +
-        (pc >= 50 ? '<div class="progress_bar_high" style="width:%d%%; height:34px; border-radius: 6px">' : 
-        (pc < 50 && pc >= 20 ? '<div class="progress_bar_medium" style="width:%d%%; height:34px; border-radius: 6px">' : 
-        '<div class="progress_bar_low" style="width:%d%%; height:34px; border-radius: 6px">')) +
-        '<div style="position:absolute; left:0; top:50%%; transform: translateY(-50%%); text-align:center; width:100%%; padding:0 4px; box-sizing:border-box; line-height:1.2;">' +
-        '<small class="text_show" style="font-size:%s; line-height:1.2;">%s '+ (f ? f : '/') +' %s ' + (np ? "" : '(%s%%)') + 
-        (tr == "null" ? '<div style="visibility: hidden; line-height:1.2;">' : '<div style="visibility: visible; line-height:1.2;">') + 
+        '<div class="progress_bar_bg" title="' + titleText + '">' +
+        (pc >= 50 ? '<div class="progress_bar_fill progress_bar_high" style="width:%d%%">' :
+        (pc < 50 && pc >= 20 ? '<div class="progress_bar_fill progress_bar_medium" style="width:%d%%">' :
+        '<div class="progress_bar_fill progress_bar_low" style="width:%d%%">')) +
+        '<div class="progress_bar_text">' +
+        '<small class="text_show" style="font-size:%s;">%s '+ (f ? f : '/') +' %s ' + (np ? "" : '(%s%%)') +
+        (tr == "null" ? '<div class="progress_bar_expire" style="visibility: hidden;">' : '<div class="progress_bar_expire" style="visibility: visible;">') +
         '%s (<%:Remaining%> %s <%:days%>)</small>' +
         '</div>' +
         '</div>' +
-        '</div>', 
-        minWidth, pc, fontSize, v, m, pc, t, tr
+        '</div>',
+        pc, fontSize, v, m, pc, t, tr
     );
 };
 
-function sub_info_refresh_<%=idname%>()
-{
+function progressbar_multi_<%=idname%>(providers) {
+    var providerCount = providers.length;
+    var itemWidth;
+    var containerClass = 'sub_providers_container';
+
+    if (providerCount === 2) {
+        itemWidth = 'calc(50% - 2px)';
+        containerClass += ' no-scroll';
+    } else if (providerCount === 3) {
+        itemWidth = 'calc(33.33% - 2.67px)';
+        containerClass += ' no-scroll';
+    } else {
+        itemWidth = '100px';
+    }
+
+    var container = '<div class="' + containerClass + '" id="sub_providers_<%=idname%>">';
+
+    providers.forEach(function(provider) {
+        var percent = parseFloat(provider.percent) || 0;
+        var providerName = provider.provider_name || 'Unknown';
+        var used = provider.used || '0 B';
+        var total = provider.total || 'N/A';
+        var surplus = provider.surplus || used;
+        var expire = provider.expire || 'null';
+        var dayLeft = parseInt(provider.day_left) || 0;
+
+        // Determine background color based on percentage
+        var bgColorClass = percent >= 50 ? 'progress_bar_high' :
+                          (percent >= 20 ? 'progress_bar_medium' : 'progress_bar_low');
+
+        // Build title for native tooltip (format: "surplus / total (percent%)\nexpire (Remaining dayLeft days)")
+        var titleText = surplus + ' / ' + total + ' (' + percent + '%)';
+        if (expire !== 'null' && dayLeft > 0) {
+            titleText += '\n' + expire + ' (<%:Remaining%> ' + dayLeft + ' <%:days%>)';
+        }
+
+        container += '<div class="sub_provider_item" style="width: ' + itemWidth + '" title="' + titleText + '">' +
+                    '<div class="sub_provider_fill ' + bgColorClass + '" style="width: ' + percent + '%"></div>' +
+                    '<span class="sub_provider_name">' + providerName + '</span>' +
+                    '<span class="sub_provider_percent">' + ' (' + percent + '%)' + '</span>' +
+                    '</div>';
+    });
+
+    container += '</div>';
+
+    if (providerCount > 3) {
+        setTimeout(function() {
+            initDragScroll_<%=idname%>();
+        }, 100);
+    }
+
+    return container;
+};
+
+function initDragScroll_<%=idname%>() {
+    var container = document.getElementById('sub_providers_<%=idname%>');
+    if (!container) return;
+
+    var isDragging = false;
+    var startX;
+    var scrollLeft;
+    var hasMoved = false;
+
+    container.addEventListener('mousedown', function(e) {
+        if (e.target.tagName === 'A' || e.target.tagName === 'BUTTON') {
+            return;
+        }
+
+        isDragging = true;
+        hasMoved = false;
+        startX = e.pageX - container.offsetLeft;
+        scrollLeft = container.scrollLeft;
+        container.classList.add('dragging');
+    });
+
+    container.addEventListener('mousemove', function(e) {
+        if (!isDragging) return;
+
+        var x = e.pageX - container.offsetLeft;
+        var walk = (x - startX) * 2;
+
+        if (Math.abs(walk) > 5) {
+            hasMoved = true;
+            e.preventDefault();
+            container.scrollLeft = scrollLeft - walk;
+        }
+    });
+
+    container.addEventListener('mouseup', function() {
+        isDragging = false;
+        container.classList.remove('dragging');
+    });
+
+    container.addEventListener('mouseleave', function() {
+        isDragging = false;
+        container.classList.remove('dragging');
+    });
+
+    container.addEventListener('dragstart', function(e) {
+        e.preventDefault();
+    });
+};
+
+function dispaly_progressbar(id, status) {
+    document.getElementById(id).className = "sub_tab_show";
+    if (status && status.providers && status.providers.length > 0) {
+        if (status.providers.length === 1) {
+            var provider = status.providers[0];
+            document.getElementById(id).innerHTML = window["progressbar_" + id](
+                (provider.surplus ? provider.surplus : provider.used),
+                (provider.total),
+                (provider.percent),
+                false, false,
+                (provider.expire),
+                (provider.day_left)
+            );
+            var textShow = document.getElementById(id).querySelector('.text_show');
+            if (textShow && textShow.scrollWidth > textShow.clientWidth) {
+                var size = parseFloat(window.getComputedStyle(textShow).fontSize) || 12;
+                while (textShow.scrollWidth > textShow.clientWidth && size > 6) {
+                    size -= 1;
+                    textShow.style.fontSize = size + 'px';
+                }
+            }
+        } else {
+            document.getElementById(id).innerHTML = window["progressbar_multi_" + id](status.providers);
+        }
+    } else {
+        document.getElementById(id).innerHTML = "<span><%:No Sub Info Found%></span>";
+    }
+};
+
+function sub_info_refresh_<%=idname%>(force) {
 	if (s_<%=idname%>) { clearTimeout(s_<%=idname%>);};
+
+    if (force) {
+        localStorage.removeItem("sub_info_<%=filename%>");
+    }
+
+    var save_info = (localStorage.getItem("sub_info_<%=filename%>")) ? JSON.parse(localStorage.getItem("sub_info_<%=filename%>")) : null;
+    var shouldFetchNew = true;
+    if (!force) {
+        dispaly_progressbar('<%=idname%>', save_info);
+        if (save_info && save_info.get_time) {
+            var currentTime = Math.floor(Date.now() / 1000);
+            var cacheTime = parseInt(save_info.get_time);
+            var timeDiff = currentTime - cacheTime;
+            var halfHourInSeconds = 30 * 60;
+
+            if (timeDiff <= halfHourInSeconds) {
+                shouldFetchNew = false;
+            }
+        }
+    }
+
+    if (!shouldFetchNew) {
+        s_<%=idname%> = setTimeout("sub_info_refresh_<%=idname%>(false)", 60000*15);
+        return;
+    }
+
+    if (!save_info) {
+        document.getElementById('<%=idname%>').className = "sub_tab_show";
+        document.getElementById('<%=idname%>').innerHTML = "<span><%:Collecting data...%></span>";
+    }
+
 	XHR.get('<%=luci.dispatcher.build_url("admin", "services", "openclash", "sub_info_get")%>', {filename: "<%=filename%>"}, function(x, status) {
-		if (x && x.status == 200 && status.sub_info != "" && status.sub_info != "No Sub Info Found") {
-			retry_<%=idname%> = 0;
-			localStorage.setItem("sub_info_<%=filename%>",JSON.stringify(status));
-			document.getElementById('<%=idname%>').className = "sub_tab_show";
-			document.getElementById('<%=idname%>').innerHTML = progressbar_<%=idname%>((status.surplus ? status.surplus : status.used), (status.total), (status.percent), false, false, (status.expire), (status.day_left));
-		}
-		else if ( x && x.status == 200 && status.sub_info == "No Sub Info Found" ) {
-			retry_<%=idname%> = 0;
-			localStorage.setItem("sub_info_<%=filename%>",JSON.stringify(status));
-			document.getElementById('<%=idname%>').className = "sub_tab_show";
-			document.getElementById('<%=idname%>').innerHTML = "<span><%:No Sub Info Found%></span>";
-		}
-		else {
-			if (document.getElementById('<%=idname%>').innerHTML == "" || retry_<%=idname%> > 2) {
-				document.getElementById('<%=idname%>').className = "sub_tab_show";
-				document.getElementById('<%=idname%>').innerHTML = "<span style=color:red><%:Sub Info Get Error%></span>";
-			}
-			if (retry_<%=idname%> > 2) {
-				retry_<%=idname%> = 0;
-				localStorage.removeItem("sub_info_<%=filename%>");
-			}
-			else {
-				retry_<%=idname%> ++;
-				s_<%=idname%> = setTimeout("sub_info_refresh_<%=idname%>()",1000*120);
-				return
-			}
-			
+        var needsErrorHandling = false;
+        if (x && x.status == 200 && status.providers.length > 0) {
+            var save_info_length = (save_info && save_info.providers) ? save_info.providers.length : 0;
+            var newProvidersLength = status.providers.length;
+            if (save_info_length !== newProvidersLength && save_info_length > newProvidersLength) {
+                needsErrorHandling = true;
+            }
+
+            if (!needsErrorHandling) {
+                retry_<%=idname%> = 0;
+                (window.requestIdleCallback || function(cb) { setTimeout(cb, 1); })(function() { localStorage.setItem("sub_info_<%=filename%>", JSON.stringify(status)); });
+                dispaly_progressbar('<%=idname%>', status);
+            }
+		} else {
+            needsErrorHandling = true;
 		};
-		s_<%=idname%> = setTimeout("sub_info_refresh_<%=idname%>()",1000*1800);
+
+        if (needsErrorHandling && retry_<%=idname%> <= 2) {
+            retry_<%=idname%>++;
+            s_<%=idname%> = setTimeout("sub_info_refresh_<%=idname%>(false)", 5000);
+        } else {
+            retry_<%=idname%> = 0;
+            dispaly_progressbar('<%=idname%>', status);
+            if (status && status.providers) {
+                (window.requestIdleCallback || function(cb) { setTimeout(cb, 1); })(function() { localStorage.setItem("sub_info_<%=filename%>", JSON.stringify(status)); });
+            }
+            s_<%=idname%> = setTimeout("sub_info_refresh_<%=idname%>(false)", 60000*15);
+        };
 	});
 };
 
-function sub_info_get_<%=idname%>()
-{
-	if (localStorage.getItem("sub_info_<%=filename%>")) {
-		var save_info = JSON.parse(localStorage.getItem("sub_info_<%=filename%>"));
-		document.getElementById('<%=idname%>').className = "sub_tab_show";
-		if (save_info.sub_info == "No Sub Info Found") {
-			document.getElementById('<%=idname%>').innerHTML = "<span><%:No Sub Info Found%></span>";
-		}
-		else {
-			document.getElementById('<%=idname%>').innerHTML = progressbar_<%=idname%>((save_info.surplus ? save_info.surplus : save_info.used), (save_info.total), (save_info.percent ? save_info.percent : 0), false, false, (save_info.expire), (save_info.day_left ? save_info.day_left : 0));
-		}
-	}
-	else {
-		sub_info_refresh_<%=idname%>();
-	};
-	s_<%=idname%> = setTimeout("sub_info_refresh_<%=idname%>()",1000*30);
-};
+function setUrlConfig_<%=idname%>() {
+    SubscriptionUrlSetter.show("<%=filename%>", "sub_info_refresh_<%=idname%>(true)");
+    return false;
+}
 
-function set_subinfo_url_<%=idname%>(btn, filename) {
-	var new_url = prompt("<%:Paste the new url of subscribe infos sources here:%>", "");
-	if (filename == null || filename == "") {
-		return false;
-	}
-	if (new_url == null) {
-		return false;
-	}
-	XHR.get('<%=luci.dispatcher.build_url("admin", "services", "openclash", "set_subinfo_url")%>', {filename: filename, url: new_url}, function(x, status) {
-		if (x && x.status == 200 && status.info == "Success")
-		{
-			sub_info_refresh_<%=idname%>();
-			alert("<%:Specify subscribe infos sources url successfully!%>");
-		}
-		else if (x && x.status == 200 && status.info == "Delete success")
-		{
-			sub_info_refresh_<%=idname%>();
-			alert("<%:Delete Specify Subscribe infos sources url successfully!%>");
-		}
-		else
-		{
-			alert("<%:Specify subscribe infos sources url failed:%>\n" + status.info);
-		}
-	});
-};
+function uploadConfig_<%=idname%>() {
+    if (typeof ConfigUploader === 'undefined') return false;
+
+    var filename = "<%=filename%>";
+    var cb = "sub_info_refresh_<%=idname%>(true)";
+    XHR.get('<%=luci.dispatcher.build_url("admin", "services", "openclash", "get_subscribe_data")%>', {
+        filename: filename
+    }, function(x, status) {
+        if (ConfigUploader.showEditSubscribe) {
+            ConfigUploader.showEditSubscribe((x && x.status == 200) ? status : null, filename, cb);
+        } else {
+            ConfigUploader.show(cb);
+        }
+    });
+    return false;
+}
 
 //]]></script>
+</div>
 <%+cbi/valuefooter%>

@@ -1,14 +1,14 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2023-06-20 05:31+0000\n"
-"Last-Translator: Mashiro <michio.haiyaku@gmail.com>\n"
+"PO-Revision-Date: 2026-06-09 01:02+0000\n"
+"Last-Translator: Mytai20100 <mytai232746@gmail.com>\n"
 "Language-Team: Vietnamese <https://hosted.weblate.org/projects/openwrt/"
 "luciapplicationsnextdns/vi/>\n"
 "Language: vi\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.18.1\n"
+"X-Generator: Weblate 2026.6\n"
 
 #: applications/luci-app-nextdns/htdocs/luci-static/resources/view/nextdns/overview.js:23
 msgid "Configuration ID"
@@ -20,19 +20,15 @@ msgstr "Bật NextDNS."
 
 #: applications/luci-app-nextdns/htdocs/luci-static/resources/view/nextdns/overview.js:18
 msgid "Enabled"
-msgstr "Kích Hoạt"
+msgstr "Đã bật"
 
 #: applications/luci-app-nextdns/htdocs/luci-static/resources/view/nextdns/overview.js:29
 msgid "Expose LAN clients information in NextDNS analytics."
 msgstr "Hiển thị thông tin thiết bị nội bộ trong phân tích NextDNS."
 
 #: applications/luci-app-nextdns/htdocs/luci-static/resources/view/nextdns/overview.js:12
-msgid ""
-"For further information, go to <a href=\"https://nextdns.io\" "
-"target=\"_blank\">nextdns.io</a>."
+msgid "For further information, go to %s."
 msgstr ""
-"Để biết thêm thông tin, hãy truy cập <a href=\"https://nextdns.io\" "
-"target=\"_blank\"> NextDNS.io </a>."
 
 #: applications/luci-app-nextdns/htdocs/luci-static/resources/view/nextdns/overview.js:15
 msgid "General"
@@ -67,6 +63,10 @@ msgstr "NextDNS"
 msgid "NextDNS Configuration."
 msgstr "Cấu hình NextDNS."
 
+#: applications/luci-app-nextdns/htdocs/luci-static/resources/view/nextdns/logread.js:4
+msgid "NextDNS Log"
+msgstr ""
+
 #: applications/luci-app-nextdns/root/usr/share/luci/menu.d/luci-app-nextdns.json:15
 msgid "Overview"
 msgstr "Tổng quan"
@@ -78,3 +78,10 @@ msgstr "Báo cáo thông tin máy khách"
 #: applications/luci-app-nextdns/htdocs/luci-static/resources/view/nextdns/overview.js:24
 msgid "The ID of your NextDNS configuration."
 msgstr "ID cho cấu hình NextDNS của bạn."
+
+#~ msgid ""
+#~ "For further information, go to <a href=\"https://nextdns.io\" "
+#~ "target=\"_blank\">nextdns.io</a>."
+#~ msgstr ""
+#~ "Để biết thêm thông tin, hãy truy cập <a href=\"https://nextdns.io\" "
+#~ "target=\"_blank\"> NextDNS.io </a>."

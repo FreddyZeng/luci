@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2025-07-03 07:20+0000\n"
-"Last-Translator: Matthieu Leboeuf <contact@matthieul.dev>\n"
+"PO-Revision-Date: 2025-11-28 05:07+0000\n"
+"Last-Translator: Martin Devolder <martin.devolder2@gmail.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/openwrt/"
 "luciapplicationsuhttpd/fr/>\n"
 "Language: fr\n"
@@ -10,7 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.13-dev\n"
+"X-Generator: Weblate 5.15-dev\n"
 
 #: applications/luci-app-uhttpd/htdocs/luci-static/resources/view/uhttpd/uhttpd.js:156
 msgid ""
@@ -29,7 +29,7 @@ msgstr "Un serveur HTTP(S) léger à fil unique"
 
 #: applications/luci-app-uhttpd/htdocs/luci-static/resources/view/uhttpd/uhttpd.js:27
 msgid "Advanced Settings"
-msgstr "Réglages avancés"
+msgstr "Paramètres avancés"
 
 #: applications/luci-app-uhttpd/htdocs/luci-static/resources/view/uhttpd/uhttpd.js:156
 msgid "Aliases"
@@ -235,8 +235,9 @@ msgstr ""
 "l'interface Web"
 
 #: applications/luci-app-uhttpd/htdocs/luci-static/resources/view/uhttpd/uhttpd.js:245
+msgctxt "Certificate state, region or province"
 msgid "State"
-msgstr "État"
+msgstr ""
 
 #: applications/luci-app-uhttpd/htdocs/luci-static/resources/view/uhttpd/uhttpd.js:212
 msgid "TCP Keepalive"
@@ -296,3 +297,6 @@ msgstr ""
 #: applications/luci-app-uhttpd/htdocs/luci-static/resources/view/uhttpd/uhttpd.js:183
 msgid "ubus integration is disabled if not present"
 msgstr "Intégration ubus désactivée si non présente"
+
+#~ msgid "State"
+#~ msgstr "État"

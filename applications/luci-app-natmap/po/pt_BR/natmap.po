@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2024-06-24 23:51+0000\n"
+"PO-Revision-Date: 2026-08-10 20:14+0000\n"
 "Last-Translator: Janderson Vieira Santos <jandersonvs79@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "openwrt/luciapplicationsnatmap/pt_BR/>\n"
@@ -8,23 +8,23 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.6-rc\n"
+"X-Generator: Weblate 2026.9.dev0\n"
 
 #: applications/luci-app-natmap/htdocs/luci-static/resources/view/natmap.js:108
 msgid "Allocation bind ports randomly instead of sequentially."
-msgstr ""
+msgstr "Alocação vincula as portas aleatoriamente em vez de sequencialmente."
 
 #: applications/luci-app-natmap/htdocs/luci-static/resources/view/natmap.js:103
 msgid "Bind port"
-msgstr "Porta do bind"
+msgstr "Porta Bind"
 
 #: applications/luci-app-natmap/htdocs/luci-static/resources/view/natmap.js:134
 msgid "Congestion control"
-msgstr ""
+msgstr "Controle de congestionamento"
 
 #: applications/luci-app-natmap/htdocs/luci-static/resources/view/natmap.js:55
 msgid "Enable"
-msgstr "Habilitar"
+msgstr "Ativar"
 
 #: applications/luci-app-natmap/htdocs/luci-static/resources/view/natmap.js:143
 msgid "External IP"
@@ -61,7 +61,7 @@ msgstr ""
 
 #: applications/luci-app-natmap/htdocs/luci-static/resources/view/natmap.js:98
 msgid "Fwmark"
-msgstr ""
+msgstr "Fwmark"
 
 #: applications/luci-app-natmap/root/usr/share/rpcd/acl.d/luci-app-natmap.json:3
 msgid "Grant access to LuCI app natmap"
@@ -77,11 +77,11 @@ msgstr "IPv4 e IPv6"
 
 #: applications/luci-app-natmap/htdocs/luci-static/resources/view/natmap.js:72
 msgid "IPv4 only"
-msgstr "Apenas IPv4"
+msgstr "Somente IPv4"
 
 #: applications/luci-app-natmap/htdocs/luci-static/resources/view/natmap.js:73
 msgid "IPv6 only"
-msgstr "Apenas IPv6"
+msgstr "Somente IPv6"
 
 #: applications/luci-app-natmap/htdocs/luci-static/resources/view/natmap.js:75
 msgid "Interface"

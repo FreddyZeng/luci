@@ -34,13 +34,19 @@ body {
     color: #cccccc;
 }
 
+.spinning::before {
+    filter: invert(1);
+}
+
 .login-page .login-container {
+    background-color: rgba(0, 0, 0, var(--blur-opacity-dark));
+    -webkit-backdrop-filter: blur(var(--blur-radius-dark));
+    backdrop-filter: blur(var(--blur-radius-dark));
 
     .login-form {
-        background-color: #1e1e1e;
-        -webkit-backdrop-filter: blur(var(--blur-radius-dark)) brightness(0);
-        backdrop-filter: blur(var(--blur-radius-dark)) brightness(0);
-        background-color: rgba(0, 0, 0, var(--blur-opacity-dark));
+        background-color: transparent;
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
 
         .brand {
             color: #adb5bd;
@@ -601,6 +607,11 @@ td.cbi-value-field var {
     background-color: var(--dark-primary) !important;
 }
 
+.cbi-section.fade-in .cbi-title>div:last-child span {
+  background: none!important;
+  color: #ced4da;
+}
+
 .cbi-input-find,
 .cbi-input-save,
 .cbi-button-add,
@@ -1053,37 +1064,15 @@ input,
 }
 
 [data-page^="admin-services-openclash"] {
-    .oc {
-        --bg-light: #1e1e1e !important;
-        --bg-gray: #1e1e1e !important;
-
-        .developer-container {
-            background: transparent !important;
-        }
-    }
-
-    .config-upload-content{
-        background: #1e1e1e !important;
-    }
-
-    .cbi-tabmenu::-webkit-scrollbar-thumb {
-        background-color: #5b5b5b;
-    }
-
-    .cbi-tabmenu::-webkit-scrollbar-track {
-        background-color: rgba(60, 60, 60, 0.75);
-    }
-
-    #tab {
-        border-color: #3c3c3c;
-    }
-
-    #diag-rc-output > pre,
-    #dns-rc-output > pre {
-        color: #ccc;
-        border: 1px solid #3c3c3c !important;
-        background-color: #1e1e1e;
-    }
+    --oc-accent: var(--dark-primary);
+    --oc-surface: #1e1e1e;
+    --oc-surface-muted: #252526;
+    --oc-control-bg: #1e1e1e;
+    --oc-border: #3c3c3c;
+    --oc-text: #ccc;
+    --oc-text-muted: #a1a1aa;
+    --oc-neutral: #5b5b5b;
+    --oc-scrollbar: #5b5b5b;
 
     img[src$="arrow-clockwise-light.svg"],
     img[src$="wrench-light.svg"],
@@ -1210,4 +1199,20 @@ input,
 .btn {
     background-color: rgb(112, 112, 112);
     color: #fff;
+}
+
+[data-page="admin-system-admin-repokeys"] #key-input {
+  background-color: #1e1e1e;
+  color: #ccc;
+  border: 1px solid #3c3c3c !important;
+}
+
+[data-page="admin-system-package-manager"] #modal_overlay textarea{
+  background-color: #1e1e1e;
+  color: #ccc;
+  border: 1px solid #3c3c3c !important;
+}
+
+.cbi-dropdown[open]>ul.dropdown>li[selected] {
+  color: #fff;
 }

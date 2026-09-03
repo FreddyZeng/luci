@@ -21,9 +21,9 @@ return L.view.extend({
 		const a = document.createElement('a');
 
 		document.body.appendChild(a);
-		a.display = 'none';
+		a.style.display = 'none';
 
-		return mibDownload(base + fileName, false).then(function(res) {
+		return mibDownload(base + fileName).then(function(res) {
 			const data = res;
 			const file = new Blob( [data] , { type: 'text/plain'});
 			const fileUrl = window.URL.createObjectURL(file);
@@ -31,6 +31,7 @@ return L.view.extend({
 			a.href = fileUrl;
 			a.download = fileName;
 			a.click();
+			window.URL.revokeObjectURL(fileUrl);
 			document.body.removeChild(a);
 		});
 	},
@@ -67,8 +68,7 @@ return L.view.extend({
 		ss = o.subsection;
 
 		files.forEach((elem) => {
-			o = ss.option(form.Button, 'dl_mib', _(elem),
-				_(''));
+			o = ss.option(form.Button, 'dl_mib', _(elem));
 			o.inputstyle = 'action important';
 			o.inputtitle = _('Download');
 			o.onclick = ui.createHandlerFn(this, this.handleMIB, elem);

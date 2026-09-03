@@ -1,18 +1,19 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
-# Copyright 2023-2025 MOSSDeF, Stan Grishin (stangri@melmac.ca).
+# Copyright 2023-2026 MOSSDeF, Stan Grishin (stangri@melmac.ca).
 
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-adblock-fast
 PKG_LICENSE:=AGPL-3.0-or-later
 PKG_MAINTAINER:=Stan Grishin <stangri@melmac.ca>
-PKG_VERSION:=1.2.0
-PKG_RELEASE:=10
+PKG_VERSION:=1.2.4
+PKG_RELEASE:=4
+PKG_CPE_ID:=cpe:/a:mossdef:luci-app-adblock-fast
 
 LUCI_TITLE:=AdBlock-Fast Web UI
-LUCI_URL:=https://github.com/stangri/luci-app-adblock-fast/
+LUCI_URL:=https://github.com/mossdef-org/luci-app-adblock-fast/
 LUCI_DESCRIPTION:=Provides Web UI for adblock-fast service.
-LUCI_DEPENDS:=+luci-base +adblock-fast +jsonfilter
+LUCI_DEPENDS:=+luci-base +adblock-fast +rpcd-mod-ucode
 
 define Package/$(PKG_NAME)/config
 # shown in make menuconfig <Help>

@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2024-07-01 12:21+0000\n"
-"Last-Translator: moreno matassini <morenomatassini95@gmail.com>\n"
+"PO-Revision-Date: 2025-11-28 22:04+0000\n"
+"Last-Translator: niky1987 <niky1987@libero.it>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/openwrt/"
 "luciapplicationseoip/it/>\n"
 "Language: it\n"
@@ -10,17 +10,17 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.7-dev\n"
+"X-Generator: Weblate 5.15-dev\n"
 
-#: applications/luci-app-eoip/htdocs/luci-static/resources/view/eoip/eoip.js:38
+#: applications/luci-app-eoip/htdocs/luci-static/resources/view/eoip/eoip.js:37
 msgid "Destination"
 msgstr "Destinazione"
 
-#: applications/luci-app-eoip/htdocs/luci-static/resources/view/eoip/eoip.js:38
+#: applications/luci-app-eoip/htdocs/luci-static/resources/view/eoip/eoip.js:37
 msgid "Destination IP address for connection EoIP."
 msgstr "Indirizzo IP destinatario per la connessione EoIP."
 
-#: applications/luci-app-eoip/htdocs/luci-static/resources/view/eoip/eoip.js:43
+#: applications/luci-app-eoip/htdocs/luci-static/resources/view/eoip/eoip.js:42
 msgid "Dynamic"
 msgstr "dinamico"
 
@@ -34,7 +34,7 @@ msgstr "EoIP - Tunneling"
 
 #: applications/luci-app-eoip/root/usr/share/luci/menu.d/luci-app-eoip.json:3
 msgid "EoIP tunnel"
-msgstr ""
+msgstr "EoIP tunnel"
 
 #: applications/luci-app-eoip/root/usr/share/rpcd/acl.d/luci-app-eoip.json:3
 msgid "Grant UCI access for luci-app-eoip"
@@ -46,41 +46,41 @@ msgid ""
 "create stateless tunnel with Mikrotik."
 msgstr ""
 
-#: applications/luci-app-eoip/htdocs/luci-static/resources/view/eoip/eoip.js:33
+#: applications/luci-app-eoip/htdocs/luci-static/resources/view/eoip/eoip.js:32
 msgid "ID tunnel"
-msgstr ""
+msgstr "Tunnel ID"
 
 #: applications/luci-app-eoip/htdocs/luci-static/resources/view/eoip/eoip.js:18
 msgid "If you input 0 interface name zeoip0"
 msgstr ""
 
-#: applications/luci-app-eoip/htdocs/luci-static/resources/view/eoip/eoip.js:43
+#: applications/luci-app-eoip/htdocs/luci-static/resources/view/eoip/eoip.js:42
 msgid ""
 "If you use dynamic option, take attention that there is no authorization, "
 "and it is not secure. It is not good idea to use this feature with public ip "
 "or insecure(not completely under your control, each host) network."
 msgstr ""
 
-#: applications/luci-app-eoip/htdocs/luci-static/resources/view/eoip/eoip.js:33
-msgid "Indeficator id tunnel"
-msgstr ""
-
 #: applications/luci-app-eoip/htdocs/luci-static/resources/view/eoip/eoip.js:18
-msgid "Name interface [zeoip"
-msgstr ""
-
-#: applications/luci-app-eoip/htdocs/luci-static/resources/view/eoip/eoip.js:26
-msgid "Name interface already in used"
+msgid "Interface name [zeoip]"
 msgstr ""
 
 #: applications/luci-app-eoip/htdocs/luci-static/resources/view/eoip/eoip.js:12
 msgid "Settings"
 msgstr "Impostazioni"
 
-#: applications/luci-app-eoip/htdocs/luci-static/resources/view/eoip/eoip.js:45
+#: applications/luci-app-eoip/htdocs/luci-static/resources/view/eoip/eoip.js:32
+msgid "Unique tunnel identifier"
+msgstr ""
+
+#: applications/luci-app-eoip/htdocs/luci-static/resources/view/eoip/eoip.js:44
 msgid "VLAN"
 msgstr ""
 
-#: applications/luci-app-eoip/htdocs/luci-static/resources/view/eoip/eoip.js:45
+#: applications/luci-app-eoip/htdocs/luci-static/resources/view/eoip/eoip.js:44
 msgid "VLAN TAG on this interface"
+msgstr ""
+
+#: applications/luci-app-eoip/htdocs/luci-static/resources/view/eoip/eoip.js:27
+msgid "interface name already in use"
 msgstr ""

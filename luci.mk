@@ -17,6 +17,19 @@ LUCI_MAINTAINER?=OpenWrt LuCI community
 LUCI_MINIFY_LUA?=1
 LUCI_MINIFY_CSS?=1
 LUCI_MINIFY_JS?=1
+LUCI_MINIFY_UT?=1
+# The oldest runtime that reads the bytecode format the host compiler emits. ucode compares that
+# format byte for equality and refuses anything else, so a package shipping precompiled templates
+# depends on a runtime that speaks the same format. Format 0x02 arrived in ucode 2026-02-27; bump
+# this line when the format byte changes again, and keep it OLDER than the ucode in tree: opkg
+# sorts the ~hash suffix below the bare version, so a floor equal to the installed version is
+# unsatisfiable there. The constraint has to stay one word: FormatDepends reads it with $(word 2),
+# so a space after >= drops the version.
+LUCI_UT_MIN_UCODE?=2026.02.27
+# ucode/host is built without the extensions a target runtime carries, and luci.core is not on the
+# host at all, so an import of one of them cannot be resolved while compiling. Force those to a
+# runtime import; the interpreter line is dead weight on a file nothing executes.
+LUCI_UT_CFLAGS?=no-interp,dynlink=luci.core,dynlink=digest,dynlink=log,dynlink=nl80211,dynlink=resolv,dynlink=rtnl,dynlink=ubus,dynlink=uci,dynlink=uloop
 
 #LUCI_LANG_START
 LUCI_LANG.ar=العربية (Arabic)
@@ -38,8 +51,11 @@ LUCI_LANG.hi=हिंदी (Hindi)
 LUCI_LANG.hu=Magyar (Hungarian)
 LUCI_LANG.it=Italiano (Italian)
 LUCI_LANG.ja=日本語 (Japanese)
+LUCI_LANG.ka=ქართული ენა (Georgian)
 LUCI_LANG.ko=한국어 (Korean)
+LUCI_LANG.lo=ພາສາລາວ (Lao)
 LUCI_LANG.lt=Lietuvių (Lithuanian)
+LUCI_LANG.lv=Latviešu (Latvian)
 LUCI_LANG.mr=Marāṭhī (Marathi)
 LUCI_LANG.ms=Bahasa Melayu (Malay)
 LUCI_LANG.nb_NO=Norsk (Norwegian)
@@ -56,8 +72,8 @@ LUCI_LANG.tr=Türkçe (Turkish)
 LUCI_LANG.uk=Українська (Ukrainian)
 LUCI_LANG.vi=Tiếng Việt (Vietnamese)
 LUCI_LANG.yua=Yucateco (Yucatec Maya)
-LUCI_LANG.zh_Hans=简体中文 (Chinese Simplified)
-LUCI_LANG.zh_Hant=繁體中文 (Chinese Traditional)
+LUCI_LANG.zh_Hans=简体中文 (Simplified Chinese)
+LUCI_LANG.zh_Hant=正體中文 (Traditional Chinese)
 #LUCI_LANG_END
 
 # Submenu titles
@@ -65,8 +81,9 @@ LUCI_MENU.col=1. Collections
 LUCI_MENU.mod=2. Modules
 LUCI_MENU.app=3. Applications
 LUCI_MENU.theme=4. Themes
-LUCI_MENU.proto=5. Protocols
-LUCI_MENU.lib=6. Libraries
+LUCI_MENU.plugin=5. Plugins
+LUCI_MENU.proto=6. Protocols
+LUCI_MENU.lib=7. Libraries
 
 # Language aliases
 LUCI_LC_ALIAS.bn_BD=bn
@@ -110,8 +127,15 @@ endef
 PKG_NAME?=$(LUCI_NAME)
 PKG_RELEASE?=1
 PKG_INSTALL:=$(if $(realpath src/Makefile),1)
-PKG_BUILD_DEPENDS += lua/host luci-base/host LUCI_CSSTIDY:csstidy/host LUCI_SRCDIET:luasrcdiet/host $(LUCI_BUILD_DEPENDS)
-PKG_CONFIG_DEPENDS += CONFIG_LUCI_SRCDIET CONFIG_LUCI_JSMIN CONFIG_LUCI_CSSTIDY
+PKG_BUILD_DEPENDS += lua/host luci-base/host LUCI_CSSTIDY:csstidy/host LUCI_SRCDIET:luasrcdiet/host LUCI_UTMIN:ucode/host $(LUCI_BUILD_DEPENDS)
+PKG_CONFIG_DEPENDS += CONFIG_LUCI_SRCDIET CONFIG_LUCI_JSMIN CONFIG_LUCI_CSSTIDY CONFIG_LUCI_UTMIN
+
+ifeq ($(CONFIG_LUCI_UTMIN)$(LUCI_MINIFY_UT),y1)
+  ifneq ($(wildcard ${CURDIR}/ucode/template),)
+    # EXTRA_DEPENDS is comma separated and FormatDepends keeps only the first two words of an item
+    LUCI_EXTRA_DEPENDS := $(strip $(if $(LUCI_EXTRA_DEPENDS),$(LUCI_EXTRA_DEPENDS)$(comma)) ucode (>=$(LUCI_UT_MIN_UCODE)))
+  endif
+endif
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
 
@@ -122,7 +146,7 @@ PKG_GITBRANCH?=$(if $(DUMP),x,$(strip $(shell \
 	variant="LuCI"; \
 	if git log -1 >/dev/null 2>/dev/null; then \
 		branch=$$(git branch --format='%(refname:strip=3)' --remote --no-abbrev --contains 2>/dev/null | tail -n1); \
-		branch=$${branch:-$$(git branch --format='%(refname:strip=2)' --no-abbrev --contains 2>/dev/null | tail -n1)}; \
+		branch=$${branch:-$$(git -c core.abbrev=7 branch --format='%(refname:strip=2)' --contains 2>/dev/null | tail -n1)}; \
 		if [ "$$branch" != "master" ]; then \
 			variant="LuCI $${branch:-unknown} branch"; \
 		else \
@@ -162,6 +186,7 @@ endif
   $(if $(LUCI_EXTRA_DEPENDS),EXTRA_DEPENDS:=$(LUCI_EXTRA_DEPENDS))
   $(if $(LUCI_PKGARCH),PKGARCH:=$(LUCI_PKGARCH))
   $(if $(PKG_PROVIDES),PROVIDES:=$(PKG_PROVIDES))
+  $(if $(LUCI_DEFAULT),DEFAULT:=$(LUCI_DEFAULT))
   URL:=$(LUCI_URL)
   MAINTAINER:=$(LUCI_MAINTAINER)
 endef
@@ -211,6 +236,7 @@ define Package/$(PKG_NAME)/install
 	  $(INSTALL_DIR) $(1)$(UCODE_LIBRARYDIR)
 	  cp -pR $(PKG_BUILD_DIR)/ucode/* $(1)$(UCODE_LIBRARYDIR)/
 	  $(call SubstituteVersion,$(1)$(UCODE_LIBRARYDIR)/)
+	  $(if $(CONFIG_LUCI_UTMIN),$(call UtMin,$(1)$(UCODE_LIBRARYDIR)/),true)
  endif
  ifneq ($(wildcard ${CURDIR}/htdocs),)
 	$(INSTALL_DIR) $(1)$(HTDOCS)
@@ -233,7 +259,7 @@ define Package/$(PKG_NAME)/postinst
 [ -n "$${IPKG_INSTROOT}" ] || { \
 	rm -f /tmp/luci-indexcache.*
 	rm -rf /tmp/luci-modulecache/
-	killall -HUP rpcd 2>/dev/null
+	/etc/init.d/rpcd reload 2>/dev/null
 	exit 0
 }
 endef
@@ -279,6 +305,19 @@ else
   endef
 endif
 
+ifeq ($(LUCI_MINIFY_UT),1)
+  define UtMin
+	$(FIND) $(1) -type f -name '*.ut' | while read src; do \
+		ucode -T, -s -c$(LUCI_UT_CFLAGS) -o "$$$$src.o" "$$$$src" || exit 1; \
+		mv "$$$$src.o" "$$$$src" && chmod 0644 "$$$$src"; \
+	done
+  endef
+else
+  define UtMin
+	$$(call MESSAGE,$$(LUCI_NAME) does not support ucode template precompilation)
+  endef
+endif
+
 define SubstituteVersion
 	$(FIND) $(1) -type f -name '*.htm' | while read src; do \
 		$(SED) 's/<%# *\([^ ]*\)PKG_VERSION *%>/\1$(if $(PKG_VERSION),$(PKG_VERSION),$(PKG_SRC_VERSION))/g' \
@@ -305,6 +344,10 @@ ifeq ($(PKG_NAME),luci-base)
 
    config LUCI_CSSTIDY
 	bool "Minify CSS files"
+	default y
+
+   config LUCI_UTMIN
+	bool "Precompile ucode templates"
 	default y
 
    menu "Translations"$(foreach lang,$(LUCI_LANGUAGES),$(if $(LUCI_LANG.$(lang)),

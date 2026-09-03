@@ -1,22 +1,18 @@
 local api = require "luci.passwall.api"
-local appname = "passwall"
+api.set_default_cbi()
+
 local fs = api.fs
 local has_singbox = api.finded_com("sing-box")
 local has_xray = api.finded_com("xray")
-local has_fw3 = api.is_finded("fw3")
-local has_fw4 = api.is_finded("fw4")
 
 local port_validate = function(self, value, t)
 	return value:gsub("-", ":")
 end
 
-m = Map(appname)
-api.set_apply_on_parse(m)
+m = Map()
 
 -- [[ Delay Settings ]]--
-s = m:section(TypedSection, "global_delay", translate("Delay Settings"))
-s.anonymous = true
-s.addremove = false
+s = m:section(NamedSection, "@global_delay[0]", "global_delay", translate("Delay Settings"))
 
 ---- Open and close Daemon
 o = s:option(Flag, "start_daemon", translate("Open and close Daemon"))
@@ -31,7 +27,9 @@ o.rmempty = true
 for index, value in ipairs({"stop", "start", "restart"}) do
 	o = s:option(ListValue, value .. "_week_mode", translate(value .. " automatically mode"))
 	o:value("", translate("Disable"))
-	o:value(8, translate("Loop Mode"))
+	if value == "restart" then
+		o:value(8, translate("Loop Mode"))
+	end
 	o:value(7, translate("Every day"))
 	o:value(1, translate("Every Monday"))
 	o:value(2, translate("Every Tuesday"))
@@ -40,9 +38,10 @@ for index, value in ipairs({"stop", "start", "restart"}) do
 	o:value(5, translate("Every Friday"))
 	o:value(6, translate("Every Saturday"))
 	o:value(0, translate("Every Sunday"))
-	o = s:option(ListValue, value .. "_time_mode", translate(value .. " Time(Every day)"))
-	for t = 0, 23 do o:value(t, t .. ":00") end
-	o.default = 0
+	o = s:option(Value, value .. "_time_mode", translate(value .. " Time"))
+	for t = 0, 23 do o:value(t .. ":00") end
+	o.default = "0:00"
+	o.datatype = "timehhmm"
 	o:depends(value .. "_week_mode", "0")
 	o:depends(value .. "_week_mode", "1")
 	o:depends(value .. "_week_mode", "2")
@@ -58,9 +57,7 @@ for index, value in ipairs({"stop", "start", "restart"}) do
 end
 
 -- [[ Forwarding Settings ]]--
-s = m:section(TypedSection, "global_forwarding", translate("Forwarding Settings"))
-s.anonymous = true
-s.addremove = false
+s = m:section(NamedSection, "@global_forwarding[0]", "global_forwarding", translate("Forwarding Settings"))
 
 ---- TCP No Redir Ports
 o = s:option(Value, "tcp_no_redir_ports", translate("TCP No Redir Ports"))
@@ -94,10 +91,10 @@ o.validate = port_validate
 
 ---- TCP Redir Ports
 o = s:option(Value, "tcp_redir_ports", translate("TCP Redir Ports"))
-o.default = "22,25,53,143,465,587,853,993,995,80,443"
 o:value("1:65535", translate("All"))
-o:value("22,25,53,143,465,587,853,993,995,80,443", translate("Common Use"))
+o:value("22,25,53,80,143,443,465,587,853,873,993,995,5222,8080,8443,9418", translate("Common Use"))
 o:value("80,443", translate("Only Web"))
+o.default = o.keylist[2]
 o.validate = port_validate
 
 ---- UDP Redir Ports
@@ -115,16 +112,17 @@ o.cfgvalue = function(t, n)
 end
 
 ---- Use nftables
-o = s:option(ListValue, "use_nft", translate("Firewall tools"))
-o.default = "0"
-if has_fw3 then
-	o:value("0", "IPtables")
-end
-if has_fw4 then
-	o:value("1", "NFtables")
-end
+o = s:option(ListValue, "prefer_nft", translate("Prefer firewall tools"))
+o.default = "1"
+o:value("0", "Iptables")
+o:value("1", "Nftables")
 
-if (os.execute("lsmod | grep -i REDIRECT >/dev/null") == 0 and os.execute("lsmod | grep -i TPROXY >/dev/null") == 0) or (os.execute("lsmod | grep -i nft_redir >/dev/null") == 0 and os.execute("lsmod | grep -i nft_tproxy >/dev/null") == 0) then
+---- Check the transparent proxy component
+local handle = io.popen("lsmod")
+local mods = handle and handle:read("*a") or ""
+if handle then handle:close() end
+
+if (mods:find("REDIRECT") and mods:find("TPROXY")) or (mods:find("nft_redir") and mods:find("nft_tproxy")) then
 	o = s:option(ListValue, "tcp_proxy_way", translate("TCP Proxy Way"))
 	o.default = "redirect"
 	o:value("redirect", "REDIRECT")
@@ -142,7 +140,7 @@ if (os.execute("lsmod | grep -i REDIRECT >/dev/null") == 0 and os.execute("lsmod
 		self.map:set(section, "tcp_proxy_way", value)
 	end
 
-	if os.execute("lsmod | grep -i ip6table_mangle >/dev/null") == 0 or os.execute("lsmod | grep -i nft_tproxy >/dev/null") == 0 then
+	if mods:find("ip6table_mangle") or mods:find("nft_tproxy") then
 		---- IPv6 TProxy
 		o = s:option(Flag, "ipv6_tproxy", translate("IPv6 TProxy"),
 					"<font color='red'>" .. translate(
@@ -161,9 +159,7 @@ o:depends("ipv6_tproxy", true)
 o.default = 0
 
 if has_xray then
-	s_xray = m:section(TypedSection, "global_xray", "Xray " .. translate("Settings"))
-	s_xray.anonymous = true
-	s_xray.addremove = false
+	s_xray = m:section(NamedSection, "@global_xray[0]", "global_xray", "Xray " .. translate("Settings"))
 
 	o = s_xray:option(Flag, "fragment", translate("Fragment"), translate("TCP fragments, which can deceive the censorship system in some cases, such as bypassing SNI blacklists."))
 	o.default = 0
@@ -177,16 +173,17 @@ if has_xray then
 	o:value("1-5", "1-5")
 	o:depends("fragment", true)
 
-	o = s_xray:option(Value, "fragment_length", translate("Fragment Length"), translate("Fragmented packet length (byte)"))
-	o.default = "100-200"
+	o = s_xray:option(Value, "fragment_lengths", translate("Fragment Length"), translate("Fragmented packet length (byte)"))
+	o.default = "3-5,6-8,10-20"
 	o:depends("fragment", true)
 
-	o = s_xray:option(Value, "fragment_interval", translate("Fragment Interval"), translate("Fragmentation interval (ms)"))
+	o = s_xray:option(Value, "fragment_delays", translate("Fragment Delay"), translate("Fragmentation interval (ms)"))
 	o.default = "10-20"
 	o:depends("fragment", true)
 
 	o = s_xray:option(Value, "fragment_maxSplit", translate("Max Split"), translate("Limit the maximum number of splits."))
-	o.default = "100-200"
+	o.datatype = "or(uinteger,portrange)"
+	o.default = "3-6"
 	o:depends("fragment", true)
 
 	o = s_xray:option(Flag, "noise", translate("Noise"), translate("UDP noise, Under some circumstances it can bypass some UDP based protocol restrictions."))
@@ -196,7 +193,7 @@ if has_xray then
 	o.default = 0
 	o.description = translate("Override the connection destination address with the sniffed domain.<br />Otherwise use sniffed domain for routing only.<br />If using shunt nodes, configure the domain shunt rules correctly.")
 
-	local domains_excluded = string.format("/usr/share/%s/rules/domains_excluded", appname)
+	local domains_excluded = string.format("/usr/share/%s/rules/domains_excluded", m.config)
 	o = s_xray:option(TextValue, "excluded_domains", translate("Excluded Domains"), translate("If the traffic sniffing result is in this list, the destination address will not be overridden."))
 	o.rows = 15
 	o.wrap = "off"
@@ -214,15 +211,19 @@ if has_xray then
 	s_xray_noise.addremove = true
 
 	s_xray_noise.create = function(e, t)
-		TypedSection.create(e, api.gen_short_uuid())
+		local uid = "xray_noise_" .. api.gen_random_char(5)
+		TypedSection.create(e, uid)
 	end
 
 	s_xray_noise.remove = function(self, section)
-		for k, v in pairs(self.children) do
-			v.rmempty = true
-			v.validate = nil
+		local o = m:get(section) or {}
+		if o[".type"] == self.sectiontype then
+			for k, v in pairs(self.children) do
+				v.rmempty = true
+				v.validate = nil
+			end
+			TypedSection.remove(self, section)
 		end
-		TypedSection.remove(self, section)
 	end
 
 	o = s_xray_noise:option(Flag, "enabled", translate("Enable"))
@@ -231,46 +232,30 @@ if has_xray then
 
 	o = s_xray_noise:option(ListValue, "type", translate("Type"))
 	o:value("rand", "rand")
+	o:value("array", "array")
 	o:value("str", "str")
 	o:value("hex", "hex")
 	o:value("base64", "base64")
 
-	o = s_xray_noise:option(Value, "packet", translate("Packet"))
+	o = s_xray_noise:option(Value, "packet", translate("Packet | Rand Length"))
 	o.datatype = "minlength(1)"
 	o.rmempty = false
 
 	o = s_xray_noise:option(Value, "delay", translate("Delay (ms)"))
 	o.datatype = "or(uinteger,portrange)"
 	o.rmempty = false
-
-	o = s_xray_noise:option(ListValue, "applyTo", translate("IP Type"))
-	o:value("ip", "ALL")
-	o:value("ipv4", "IPv4")
-	o:value("ipv6", "IPv6")
 end
 
 if has_singbox then
-	local version = api.get_app_version("sing-box"):match("[^v]+")
-	local version_ge_1_12_0 = api.compare_versions(version, ">=", "1.12.0")
+	s = m:section(NamedSection, "@global_singbox[0]", "global_singbox", "Sing-Box " .. translate("Settings"))
 
-	s = m:section(TypedSection, "global_singbox", "Sing-Box " .. translate("Settings"))
-	s.anonymous = true
-	s.addremove = false
-
-	o = s:option(Flag, "sniff_override_destination", translate("Override the connection destination address"))
+	o = s:option(Flag, "record_fragment", "TLS Record " .. translate("Fragment"),
+		translate("Split handshake data into multiple TLS records for better censorship evasion. Low overhead. Recommended to enable first."))
 	o.default = 0
-	o.rmempty = false
-	o.description = translate("Override the connection destination address with the sniffed domain.<br />When enabled, traffic will match only by domain, ignoring IP rules.<br />If using shunt nodes, configure the domain shunt rules correctly.")
 
-	if version_ge_1_12_0 then
-		o = s:option(Flag, "record_fragment", "TLS Record " .. translate("Fragment"),
-			translate("Split handshake data into multiple TLS records for better censorship evasion. Low overhead. Recommended to enable first."))
-		o.default = 0
-
-		o = s:option(Flag, "fragment", "TLS TCP " .. translate("Fragment"),
-			translate("Split handshake into multiple TCP segments. Enhances obfuscation. May increase delay. Use only if needed."))
-		o.default = 0
-	end
+	o = s:option(Flag, "fragment", "TLS TCP " .. translate("Fragment"),
+		translate("Split handshake into multiple TCP segments. Enhances obfuscation. May increase delay. Use only if needed."))
+	o.default = 0
 end
 
-return m
+return api.return_map(m)

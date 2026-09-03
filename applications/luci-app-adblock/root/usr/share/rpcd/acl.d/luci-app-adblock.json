@@ -2,14 +2,18 @@
 	"luci-app-adblock": {
 		"description": "Grant access to LuCI app adblock",
 		"write": {
+			"cgi-io": [
+				"upload"
+			],
+			"ubus": {
+				"file": [
+					"write"
+				]
+			},
 			"uci": [
 				"adblock"
 			],
 			"file": {
-				"/etc/adblock/*": [
-					"read",
-					"write"
-				],
 				"/etc/adblock/adblock.allowlist": [
 					"write"
 				],
@@ -17,27 +21,50 @@
 					"write"
 				],
 				"/etc/adblock/adblock.custom.feeds": [
-					"read",
+					"write"
+				],
+				"/tmp/run/adblock/adblock.search": [
+					"write"
+				],
+				"/var/run/adblock/adblock.search": [
+					"write"
+				],
+				"/var/run/adblock/adblock.report": [
+					"write"
+				],
+				"/tmp/run/adblock/adblock.report": [
 					"write"
 				]
 			}
 		},
 		"read": {
 			"cgi-io": [
+				"download",
 				"exec"
 			],
 			"file": {
-				"/var/run/adblock.pid": [
+				"/etc/adblock/*": [
 					"read"
 				],
-				"/var/run/adb_runtime.json": [
+				"/var/run/adblock/adblock.runtime.json": [
+					"read",
+					"list"
+				],
+				"/tmp/run/adblock/adblock.runtime.json": [
+					"read",
+					"list"
+				],
+				"/var/run/adblock/adblock.search": [
 					"read"
 				],
-				"/sbin/logread -e adblock-": [
-					"exec"
+				"/tmp/run/adblock/adblock.search": [
+					"read"
 				],
-				"/usr/sbin/logread -e adblock-": [
-					"exec"
+				"/var/run/adblock/adblock.report": [
+					"read"
+				],
+				"/tmp/run/adblock/adblock.report": [
+					"read"
 				],
 				"/etc/init.d/adblock reload": [
 					"exec"
@@ -54,15 +81,24 @@
 				"/etc/init.d/adblock stop": [
 					"exec"
 				],
-				"/etc/init.d/adblock report [a-z]* [0-9]* [0-9]* *": [
+				"/etc/init.d/adblock report *": [
 					"exec"
 				],
-				"/etc/init.d/adblock query *": [
+				"/etc/init.d/adblock search *": [
 					"exec"
+				]
+			},
+			"ubus": {
+				"file": [
+					"read",
+					"stat"
 				]
 			},
 			"uci": [
 				"adblock"
+			],
+			"log": [
+				"read"
 			]
 		}
 	}

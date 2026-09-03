@@ -1,4 +1,31 @@
+<%
+local map = self.map
+local appname = map.config
+-%>
 
+<style>
+@media screen and (min-width: 1152px) {
+	#cbi-<%=appname%>-haproxy_config input[id*=".<%=appname%>."][id$=".haproxy_port"],
+	#cbi-<%=appname%>-haproxy_config input[id*=".<%=appname%>."][id$=".lbweight"] {
+		width: 100px !important;
+		min-width: unset !important;
+		max-width: unset !important;
+		text-align: center !important;
+	}
+
+	#cbi-<%=appname%>-haproxy_config select[id*=".<%=appname%>."][id$=".export"] {
+		width: 130px !important;
+		min-width: unset !important;
+		max-width: unset !important;
+	}
+
+	#cbi-<%=appname%>-haproxy_config select[id*=".<%=appname%>."][id$=".backup"] {
+		width: 100px !important;
+		min-width: unset !important;
+		max-width: unset !important;
+	}
+}
+</style>
 <script type="text/javascript">
 	//<![CDATA[
 	document.addEventListener("DOMContentLoaded", function () {

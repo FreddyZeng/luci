@@ -26,19 +26,19 @@
 'require rpc';
 'require ui';
 
-var conf = 'smartdns';
-var callServiceList = rpc.declare({
+const conf = 'smartdns';
+const callServiceList = rpc.declare({
 	object: 'service',
 	method: 'list',
 	params: ['name'],
 	expect: { '': {} }
 });
-var pollAdded = false;
+let pollAdded = false;
 
 function getServiceStatus() {
 	return L.resolveDefault(callServiceList(conf), {})
 		.then(function (res) {
-			var is_running = false;
+			let is_running = false;
 			try {
 				is_running = res[conf]['instances']['smartdns']['running'];
 			} catch (e) { }
@@ -46,32 +46,25 @@ function getServiceStatus() {
 		});
 }
 
-function smartdnsServiceStatus() {
-	return Promise.all([
-		getServiceStatus()
-	]);
-}
+function smartdnsRenderStatus(isRunning) {
+	let renderHTML = "";
 
-function smartdnsRenderStatus(res) {
-	var renderHTML = "";
-	var isRunning = res[0];
+	const autoSetDnsmasq = uci.get_first('smartdns', 'smartdns', 'auto_set_dnsmasq');
+	const smartdnsPort = uci.get_first('smartdns', 'smartdns', 'port');
+	const smartdnsEnable = uci.get_first('smartdns', 'smartdns', 'enabled');
+	const dnsmasqServer = uci.get_first('dhcp', 'dnsmasq', 'server');
 
-	var autoSetDnsmasq = uci.get_first('smartdns', 'smartdns', 'auto_set_dnsmasq');
-	var smartdnsPort = uci.get_first('smartdns', 'smartdns', 'port');
-	var smartdnsEnable = uci.get_first('smartdns', 'smartdns', 'enabled');
-	var dnsmasqServer = uci.get_first('dhcp', 'dnsmasq', 'server');
-
-	var uiEnable = uci.get_first('smartdns', 'smartdns', 'ui') || "0";
-	var uiPort = uci.get_first('smartdns', 'smartdns', 'ui_port') || "6080";
+	const uiEnable = uci.get_first('smartdns', 'smartdns', 'ui') || "0";
+	const uiPort = uci.get_first('smartdns', 'smartdns', 'ui_port') || "6080";
 
 	if (isRunning) {
 		renderHTML += "<span style=\"color:green;font-weight:bold\">SmartDNS - " + _("RUNNING") + "</span>";
 
 		if (uiEnable === '1') {
-			var protocol = window.location.protocol;
-			var hostname = window.location.hostname;
-			var uiLink = protocol + "//" + hostname + ":" + uiPort;
-			renderHTML += "&#160; <a class=\"btn cbi-button\" style=\"margin-left: 10px; background-color: black; color: white; border-color: #333;\" href=\"" + uiLink + "\" target=\"_blank\">" + _("Open the WebUI") + "</a>";
+			const protocol = window.location.protocol;
+			const hostname = window.location.hostname;
+			const uiLink = protocol + "//" + hostname + ":" + uiPort;
+			renderHTML += '&#160; <a class="btn cbi-button" ' +  'href="' + uiLink + '" target="_blank">' +  _("Open the WebUI") +  '</a>';
 		}
 	} else {
 		renderHTML += "<span style=\"color:red;font-weight:bold\">SmartDNS - " + _("NOT RUNNING") + "</span>";
@@ -83,7 +76,7 @@ function smartdnsRenderStatus(res) {
 	}
 
 	if (autoSetDnsmasq === '1' && smartdnsPort != '53') {
-		var matchLine = "127.0.0.1#" + smartdnsPort;
+		const matchLine = "127.0.0.1#" + smartdnsPort;
 
 		uci.unload('dhcp');
 		uci.load('dhcp');
@@ -104,18 +97,18 @@ function isSmartdnsUiAvailable() {
 }
 
 return view.extend({
-	load: function () {
+	load() {
 		return Promise.all([
 			uci.load('dhcp'),
 			uci.load('smartdns'),
 			isSmartdnsUiAvailable()
 		]);
 	},
-	render: function (stats) {
-		var m, s, o;
-		var ss, so;
-		var servers, download_files;
-		var hasUi = stats[2];
+	render(stats) {
+		let m, s, o;
+		let ss, so;
+		let servers, download_files;
+		let hasUi = stats[2];
 
 		m = new form.Map('smartdns', _('SmartDNS'));
 		m.title = _("SmartDNS Server");
@@ -125,9 +118,9 @@ return view.extend({
 		s = m.section(form.NamedSection, '_status');
 		s.anonymous = true;
 		s.render = function (section_id) {
-			var renderStatus = function () {
-				return L.resolveDefault(smartdnsServiceStatus()).then(function (res) {
-					var view = document.getElementById("service_status");
+			const renderStatus = function () {
+				return L.resolveDefault(getServiceStatus()).then(function (res) {
+					const view = document.getElementById("service_status");
 					if (view == null) {
 						return;
 					}
@@ -170,9 +163,9 @@ return view.extend({
 
 		// server name;
 		o = s.taboption("settings", form.Value, "server_name", _("Server Name"), _("Smartdns server name"));
-		o.default = "smartdns";
+		o.placeholder = "server name";
 		o.datatype = "hostname";
-		o.rempty = false;
+		o.rempty = true;
 
 		// Port;
 		o = s.taboption("settings", form.Value, "port", _("Local Port"),
@@ -224,6 +217,8 @@ return view.extend({
 		o.value("ping,tcp:443,tcp:80");
 		o.value("tcp:80,tcp:443,ping");
 		o.value("tcp:443,tcp:80,ping");
+		o.value("tcp-syn:80,tcp-syn:443,ping");
+		o.value("tcp-syn:443,tcp-syn:80,ping");
 		o.value("none", _("None"));
 		o.validate = function (section_id, value) {
 			if (value == "") {
@@ -234,16 +229,25 @@ return view.extend({
 				return true;
 			}
 
-			var check_mode = value.split(",")
-			for (var i = 0; i < check_mode.length; i++) {
-				if (check_mode[i] == "ping") {
+			const check_mode = value.split(",")
+			for (let cm of check_mode) {
+				if (cm == "ping") {
 					continue;
 				}
 
-				if (check_mode[i].indexOf("tcp:") == 0) {
-					var port = check_mode[i].split(":")[1];
+				if (cm.indexOf("tcp:") == 0) {
+					const port = cm.split(":")[1];
 					if (port == "") {
 						return _("TCP port is empty");
+					}
+
+					continue;
+				}
+
+				if (cm.indexOf("tcp-syn:") == 0) {
+					const port = cm.split(":")[1];
+					if (port == "") {
+						return _("TCP SYN port is empty");
 					}
 
 					continue;
@@ -314,8 +318,8 @@ return view.extend({
 		o.depends('tls_server', '1');
 		o.depends('doh_server', '1');
 
-		// Support IPV6;
-		o = s.taboption("advanced", form.Flag, "ipv6_server", _("IPV6 Server"), _("Enable IPV6 DNS Server"));
+		// Support IPv6;
+		o = s.taboption("advanced", form.Flag, "ipv6_server", _("IPv6 Server"), _("Enable IPv6 DNS Server"));
 		o.rmempty = false;
 		o.default = o.enabled;
 
@@ -332,7 +336,7 @@ return view.extend({
 
 		// Support DualStack ip selection;
 		o = s.taboption("advanced", form.Flag, "dualstack_ip_selection", _("Dual-stack IP Selection"),
-			_("Enable IP selection between IPV4 and IPV6"));
+			_("Enable IP selection between IPv4 and IPv6"));
 		o.rmempty = false;
 		o.default = o.enabled;
 
@@ -387,8 +391,8 @@ return view.extend({
 				return true;
 			}
 
-			var ipset = value.split(",")
-			for (var i = 0; i < ipset.length; i++) {
+			let ipset = value.split(",")
+			for (let i = 0; i < ipset.length; i++) {
 				if (!ipset[i].match(/^(#[4|6]:)?[a-zA-Z0-9\-_]+$/)) {
 					return _("ipset name format error, format: [#[4|6]:]ipsetname");
 				}
@@ -408,9 +412,9 @@ return view.extend({
 				return true;
 			}
 
-			var ipset = value.split(",")
-			for (var i = 0; i < ipset.length; i++) {
-				if (!ipset[i].match(/^(#[4|6]:)?[a-zA-Z0-9\-_]+$/)) {
+			const ipset = value.split(",")
+			for (let ips of ipset) {
+				if (!ips.match(/^(#[4|6]:)?[a-zA-Z0-9\-_]+$/)) {
 					return _("ipset name format error, format: [#[4|6]:]ipsetname");
 				}
 			}
@@ -428,9 +432,9 @@ return view.extend({
 				return true;
 			}
 
-			var nftset = value.split(",")
-			for (var i = 0; i < nftset.length; i++) {
-				if (!nftset[i].match(/^#[4|6]:[a-zA-Z0-9\-_]+#[a-zA-Z0-9\-_]+#[a-zA-Z0-9\-_]+$/)) {
+			const nftset = value.split(",")
+			for (let nfts of nftset) {
+				if (!nfts.match(/^#[4|6]:[a-zA-Z0-9\-_]+#[a-zA-Z0-9\-_]+#[a-zA-Z0-9\-_]+$/)) {
 					return _("NFTset name format error, format: [#[4|6]:[family#table#set]]");
 				}
 			}
@@ -449,9 +453,9 @@ return view.extend({
 				return true;
 			}
 
-			var nftset = value.split(",")
-			for (var i = 0; i < nftset.length; i++) {
-				if (!nftset[i].match(/^#[4|6]:[a-zA-Z0-9\-_]+#[a-zA-Z0-9\-_]+#[a-zA-Z0-9\-_]+$/)) {
+			const nftset = value.split(",")
+			for (let nfts of nftset) {
+				if (!nfts.match(/^#[4|6]:[a-zA-Z0-9\-_]+#[a-zA-Z0-9\-_]+#[a-zA-Z0-9\-_]+$/)) {
 					return _("NFTset name format error, format: [#[4|6]:[family#table#set]]");
 				}
 			}
@@ -491,30 +495,30 @@ return view.extend({
 		download_files = uci.sections('smartdns', 'download-file');
 		o = s.taboption("advanced", form.DynamicList, "conf_files", _("Include Config Files<br>/etc/smartdns/conf.d"),
 			_("Include other config files from /etc/smartdns/conf.d or custom path, can be downloaded from the download page."));
-		for (var i = 0; i < download_files.length; i++) {
-			if (download_files[i].type == undefined) {
+		for (let df of download_files) {
+			if (df.type == undefined) {
 				continue;
 			}
 
-			if (download_files[i].type != 'config') {
-				continue
+			if (df.type != 'config') {
+				continue;
 			}
 
-			o.value(download_files[i].name);
+			o.value(df.name);
 		}
 
 		o = s.taboption("advanced", form.DynamicList, "hosts_files", _("Hosts File"), _("Include hosts file."));
 		o.rmempty = true;
-		for (var i = 0; i < download_files.length; i++) {
-			if (download_files[i].type == undefined) {
+		for (let df of download_files) {
+			if (df.type == undefined) {
 				continue;
 			}
 
-			if (download_files[i].type != 'other') {
-				continue
+			if (df.type != 'other') {
+				continue;
 			}
 
-			o.value(download_files[i].name);
+			o.value(df.name);
 		}
 
 		///////////////////////////////////////
@@ -608,9 +612,9 @@ return view.extend({
 				return true;
 			}
 
-			var ipset = value.split(",")
-			for (var i = 0; i < ipset.length; i++) {
-				if (!ipset[i].match(/^(#[4|6]:)?[a-zA-Z0-9\-_]+$/)) {
+			const ipset = value.split(",")
+			for (let ips of ipset) {
+				if (!ips.match(/^(#[4|6]:)?[a-zA-Z0-9\-_]+$/)) {
 					return _("ipset name format error, format: [#[4|6]:]ipsetname");
 				}
 			}
@@ -627,9 +631,9 @@ return view.extend({
 				return true;
 			}
 
-			var nftset = value.split(",")
-			for (var i = 0; i < nftset.length; i++) {
-				if (!nftset[i].match(/^#[4|6]:[a-zA-Z0-9\-_]+#[a-zA-Z0-9\-_]+#[a-zA-Z0-9\-_]+$/)) {
+			const nftset = value.split(",")
+			for (let nfts of nftset) {
+				if (!nfts.match(/^#[4|6]:[a-zA-Z0-9\-_]+#[a-zA-Z0-9\-_]+#[a-zA-Z0-9\-_]+$/)) {
 					return _("NFTset name format error, format: [#[4|6]:[family#table#set]]");
 				}
 			}
@@ -672,7 +676,7 @@ return view.extend({
 		o.depends('enable_auto_update', '1');
 
 		o = s.taboption('files', form.ListValue, 'auto_update_day_time', _("Update time (every day)"));
-		for (var i = 0; i < 24; i++)
+		for (let i = 0; i < 24; i++)
 			o.value(i, i + ':00');
 		o.default = '5';
 		o.depends('enable_auto_update', '1');
@@ -832,7 +836,7 @@ return view.extend({
 				})
 			}, [_("View Log")]);
 		}
-		var log_levels = ["debug", "info", "notice", "warn", "error", "fatal"];
+		const log_levels = ["debug", "info", "notice", "warn", "error", "fatal"];
 		log_levels.forEach(function(level) {
 			o.depends({ log_output_mode: "file", log_level: level });
 		});
@@ -920,12 +924,12 @@ return view.extend({
 		o.datatype = "hostname";
 		o.rempty = true;
 		servers = uci.sections('smartdns', 'server');
-		var groupnames = new Set();
-		for (var i = 0; i < servers.length; i++) {
-			if (servers[i].server_group == undefined) {
+		let groupnames = new Set();
+		for (let serv of servers) {
+			if (serv.server_group == undefined) {
 				continue;
 			}
-			groupnames.add(servers[i].server_group);
+			groupnames.add(serv.server_group);
 		}
 
 		for (const groupname of groupnames) {
@@ -1020,13 +1024,13 @@ return view.extend({
 		o.optional = true;
 		o.rempty = true;
 		o.validate = function (section_id, value) {
-			var flag = this.formvalue(section_id);
+			const flag = this.formvalue(section_id);
 			if (flag == "0") {
 				return true;
 			}
 
-			var proxy_server = uci.sections("smartdns", "smartdns")[0].proxy_server;
-			var server_type = this.section.formvalue(section_id, "type");
+			const proxy_server = uci.sections("smartdns", "smartdns")[0].proxy_server;
+			const server_type = this.section.formvalue(section_id, "type");
 			if (proxy_server == "" || proxy_server == undefined) {
 				return _("Please set proxy server first.");
 			}
@@ -1037,6 +1041,13 @@ return view.extend({
 
 			return true;
 		}
+
+		// fallback
+		o = s.taboption("advanced", form.Flag, "fallback", _("Fallback"),
+			_("Mark this server as a fallback server, use it only when default servers fail."))
+		o.default = o.disabled
+		o.rmempty = true
+		o.modalonly = true
 
 		// other args
 		o = s.taboption("advanced", form.Value, "addition_arg", _("Additional Server Args"),
@@ -1106,9 +1117,9 @@ return view.extend({
 				return true;
 			}
 
-			var val = uci.sections('smartdns', 'server');
-			for (var i = 0; i < val.length; i++) {
-				if (value == val[i].server_group) {
+			const val = uci.sections('smartdns', 'server');
+			for (let i of val) {
+				if (value == i.server_group) {
 					return true;
 				}
 			}
@@ -1126,6 +1137,8 @@ return view.extend({
 		o.value("ping,tcp:443,tcp:80");
 		o.value("tcp:80,tcp:443,ping");
 		o.value("tcp:443,tcp:80,ping");
+		o.value("tcp-syn:80,tcp-syn:443,ping");
+		o.value("tcp-syn:443,tcp-syn:80,ping");
 		o.value("none", _("None"));
 		o.validate = function (section_id, value) {
 			if (value == "") {
@@ -1136,16 +1149,25 @@ return view.extend({
 				return true;
 			}
 
-			var check_mode = value.split(",")
-			for (var i = 0; i < check_mode.length; i++) {
-				if (check_mode[i] == "ping") {
+			const check_mode = value.split(",")
+			for (let cm of check_mode) {
+				if (cm == "ping") {
 					continue;
 				}
 
-				if (check_mode[i].indexOf("tcp:") == 0) {
-					var port = check_mode[i].split(":")[1];
+				if (cm.indexOf("tcp:") == 0) {
+					const port = cm.split(":")[1];
 					if (port == "") {
 						return _("TCP port is empty");
+					}
+
+					continue;
+				}
+
+				if (cm.indexOf("tcp-syn:") == 0) {
+					const port = cm.split(":")[1];
+					if (port == "") {
+						return _("TCP SYN port is empty");
 					}
 
 					continue;
@@ -1159,7 +1181,7 @@ return view.extend({
 
 		// Support DualStack ip selection;
 		o = s.taboption("advanced", form.Flag, "dualstack_ip_selection", _("Dual-stack IP Selection"),
-			_("Enable IP selection between IPV4 and IPV6"));
+			_("Enable IP selection between IPv4 and IPv6"));
 		o.rmempty = false;
 		o.default = o.enabled;
 
@@ -1183,9 +1205,9 @@ return view.extend({
 				return true;
 			}
 
-			var ipset = value.split(",")
-			for (var i = 0; i < ipset.length; i++) {
-				if (!ipset[i].match(/^(#[4|6]:)?[a-zA-Z0-9\-_]+$/)) {
+			const ipset = value.split(",")
+			for (let ips of ipset) {
+				if (!ips.match(/^(#[4|6]:)?[a-zA-Z0-9\-_]+$/)) {
 					return _("ipset name format error, format: [#[4|6]:]ipsetname");
 				}
 			}
@@ -1203,9 +1225,9 @@ return view.extend({
 				return true;
 			}
 
-			var nftset = value.split(",")
-			for (var i = 0; i < nftset.length; i++) {
-				if (!nftset[i].match(/^#[4|6]:[a-zA-Z0-9\-_]+#[a-zA-Z0-9\-_]+#[a-zA-Z0-9\-_]+$/)) {
+			const nftset = value.split(",")
+			for (let nfts of nftset) {
+				if (!nfts.match(/^#[4|6]:[a-zA-Z0-9\-_]+#[a-zA-Z0-9\-_]+#[a-zA-Z0-9\-_]+$/)) {
 					return _("NFTset name format error, format: [#[4|6]:[family#table#set]]");
 				}
 			}
@@ -1217,16 +1239,16 @@ return view.extend({
 		download_files = uci.sections('smartdns', 'download-file');
 		o = s.taboption("advanced", form.DynamicList, "conf_files", _("Include Config Files<br>/etc/smartdns/conf.d"),
 			_("Include other config files from /etc/smartdns/conf.d or custom path, can be downloaded from the download page."));
-		for (var i = 0; i < download_files.length; i++) {
-			if (download_files[i].type == undefined) {
+		for (let df of download_files) {
+			if (df.type == undefined) {
 				continue;
 			}
 
-			if (download_files[i].type != 'config') {
-				continue
+			if (df.type != 'config') {
+				continue;
 			}
 
-			o.value(download_files[i].name);
+			o.value(df.name);
 		}
 
 		o = s.taboption("block", form.FileUpload, "block_domain_set_file", _("Domain List File"), _("Upload domain list file."));
@@ -1265,9 +1287,9 @@ return view.extend({
 				return true;
 			}
 
-			var val = uci.sections('smartdns', 'server');
-			for (var i = 0; i < val.length; i++) {
-				if (value == val[i].server_group) {
+			const val = uci.sections('smartdns', 'server');
+			for (let v of val) {
+				if (value == v.server_group) {
 					return true;
 				}
 			}
@@ -1285,6 +1307,8 @@ return view.extend({
 		o.value("ping,tcp:443,tcp:80");
 		o.value("tcp:80,tcp:443,ping");
 		o.value("tcp:443,tcp:80,ping");
+		o.value("tcp-syn:80,tcp-syn:443,ping");
+		o.value("tcp-syn:443,tcp-syn:80,ping");
 		o.value("none", _("None"));
 		o.validate = function (section_id, value) {
 			if (value == "") {
@@ -1295,16 +1319,25 @@ return view.extend({
 				return true;
 			}
 
-			var check_mode = value.split(",")
-			for (var i = 0; i < check_mode.length; i++) {
-				if (check_mode[i] == "ping") {
+			const check_mode = value.split(",")
+			for (let cm of check_mode) {
+				if (cm == "ping") {
 					continue;
 				}
 
-				if (check_mode[i].indexOf("tcp:") == 0) {
-					var port = check_mode[i].split(":")[1];
+				if (cm.indexOf("tcp:") == 0) {
+					const port = cm.split(":")[1];
 					if (port == "") {
 						return _("TCP port is empty");
+					}
+
+					continue;
+				}
+
+				if (cm.indexOf("tcp-syn:") == 0) {
+					const port = cm.split(":")[1];
+					if (port == "") {
+						return _("TCP SYN port is empty");
 					}
 
 					continue;
@@ -1318,7 +1351,7 @@ return view.extend({
 
 		// Support DualStack ip selection;
 		o = s.taboption("forwarding", form.ListValue, "dualstack_ip_selection", _("Dual-stack IP Selection"),
-			_("Enable IP selection between IPV4 and IPV6"));
+			_("Enable IP selection between IPv4 and IPv6"));
 		o.rmempty = true;
 		o.default = "default";
 		o.modalonly = true;
@@ -1339,9 +1372,9 @@ return view.extend({
 				return true;
 			}
 
-			var ipset = value.split(",")
-			for (var i = 0; i < ipset.length; i++) {
-				if (!ipset[i].match(/^(#[4|6]:)?[a-zA-Z0-9\-_]+$/)) {
+			const ipset = value.split(",")
+			for (let ips of ipset) {
+				if (!ips.match(/^(#[4|6]:)?[a-zA-Z0-9\-_]+$/)) {
 					return _("ipset name format error, format: [#[4|6]:]ipsetname");
 				}
 			}
@@ -1358,9 +1391,9 @@ return view.extend({
 				return true;
 			}
 
-			var nftset = value.split(",")
-			for (var i = 0; i < nftset.length; i++) {
-				if (!nftset[i].match(/^#[4|6]:[a-zA-Z0-9\-_]+#[a-zA-Z0-9\-_]+#[a-zA-Z0-9\-_]+$/)) {
+			const nftset = value.split(",")
+			for (let nfts of nftset) {
+				if (!nfts.match(/^#[4|6]:[a-zA-Z0-9\-_]+#[a-zA-Z0-9\-_]+#[a-zA-Z0-9\-_]+$/)) {
 					return _("NFTset name format error, format: [#[4|6]:[family#table#set]]");
 				}
 			}
@@ -1464,9 +1497,9 @@ return view.extend({
 				return true;
 			}
 
-			var val = uci.sections('smartdns', 'server');
-			for (var i = 0; i < val.length; i++) {
-				if (value == val[i].server_group) {
+			const val = uci.sections('smartdns', 'server');
+			for (let v of val) {
+				if (value == v.server_group) {
 					return true;
 				}
 			}
@@ -1492,7 +1525,7 @@ return view.extend({
 
 		// Support DualStack ip selection;
 		so = ss.option(form.ListValue, "dualstack_ip_selection", _("Dual-stack IP Selection"),
-			_("Enable IP selection between IPV4 and IPV6"));
+			_("Enable IP selection between IPv4 and IPv6"));
 		so.rmempty = true;
 		so.default = "default";
 		so.modalonly = true;
@@ -1509,6 +1542,8 @@ return view.extend({
 		so.value("ping,tcp:443,tcp:80");
 		so.value("tcp:80,tcp:443,ping");
 		so.value("tcp:443,tcp:80,ping");
+		so.value("tcp-syn:80,tcp-syn:443,ping");
+		so.value("tcp-syn:443,tcp-syn:80,ping");
 		so.value("none", _("None"));
 		so.validate = function (section_id, value) {
 			if (value == "") {
@@ -1519,16 +1554,25 @@ return view.extend({
 				return true;
 			}
 
-			var check_mode = value.split(",")
-			for (var i = 0; i < check_mode.length; i++) {
-				if (check_mode[i] == "ping") {
+			const check_mode = value.split(",")
+			for (let cm of check_mode) {
+				if (cm == "ping") {
 					continue;
 				}
 
-				if (check_mode[i].indexOf("tcp:") == 0) {
-					var port = check_mode[i].split(":")[1];
+				if (cm.indexOf("tcp:") == 0) {
+					const port = cm.split(":")[1];
 					if (port == "") {
 						return _("TCP port is empty");
+					}
+
+					continue;
+				}
+
+				if (cm.indexOf("tcp-syn:") == 0) {
+					const port = cm.split(":")[1];
+					if (port == "") {
+						return _("TCP SYN port is empty");
 					}
 
 					continue;
@@ -1562,9 +1606,9 @@ return view.extend({
 				return true;
 			}
 
-			var nftset = value.split(",")
-			for (var i = 0; i < nftset.length; i++) {
-				if (!nftset[i].match(/#[4|6]:[a-zA-Z0-9\-_]+#[a-zA-Z0-9\-_]+#[a-zA-Z0-9\-_]+$/)) {
+			const nftset = value.split(",")
+			for (let nfts of nftset) {
+				if (!nfts.match(/#[4|6]:[a-zA-Z0-9\-_]+#[a-zA-Z0-9\-_]+#[a-zA-Z0-9\-_]+$/)) {
 					return _("NFTset name format error, format: [#[4|6]:[family#table#set]]");
 				}
 			}

@@ -8,7 +8,7 @@
 'use strict';
 
 import { cursor } from 'uci';
-import { isEmpty, parseURL } from 'homeproxy';
+import { isEmpty, parseURL, validation } from 'homeproxy';
 
 const uci = cursor();
 
@@ -48,6 +48,10 @@ if (github_token) {
 	uci.set(uciconfig, ucimain, 'github_token', github_token);
 	uci.delete(uciconfig, uciinfra, 'github_token')
 }
+
+/* ntp_server was introduced */
+if (!uci.get(uciconfig, uciinfra, 'ntp_server'))
+	uci.set(uciconfig, uciinfra, 'ntp_server', 'nil');
 
 /* tun_gso was deprecated in sb 1.11 */
 if (!isEmpty(uci.get(uciconfig, uciinfra, 'tun_gso')))
